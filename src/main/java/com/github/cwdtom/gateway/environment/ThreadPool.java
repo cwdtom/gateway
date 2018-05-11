@@ -1,11 +1,8 @@
 package com.github.cwdtom.gateway.environment;
 
-import com.github.cwdtom.gateway.entity.Constant;
+import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
-import org.yaml.snakeyaml.Yaml;
 
-import java.io.InputStream;
-import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -33,23 +30,10 @@ public class ThreadPool {
     }
 
     static {
-        InputStream input = HttpEnvironment.class.getResourceAsStream(Constant.CONFIG_FILE_PATH);
-        if (input == null) {
-            log.error("application.yml is not found.");
-            System.exit(1);
-        }
-        Yaml yaml = new Yaml();
-        Map<String, Object> object = yaml.load(input);
-        // thread key 对应的为map类
-        @SuppressWarnings("unchecked")
-        Map<String, Object> threadMap = (Map<String, Object>) object.get("thread");
-        // pool key 对应的为map类
-        @SuppressWarnings("unchecked")
-        Map<String, Object> poolMap = (Map<String, Object>) threadMap.get("pool");
-
-        int min = (int) poolMap.get("min");
-        int max = (int) poolMap.get("max");
-        int timeout = (int) poolMap.get("timeout");
+        JSONObject obj = ConfigEnvironment.getChild("threadPool");
+        int min = obj.getInteger("min");
+        int max = obj.getInteger("max");
+        int timeout = obj.getInteger("timeout");
         threadPoolExecutor = new ThreadPoolExecutor(min, max, timeout, TimeUnit.MILLISECONDS,
                 new ArrayBlockingQueue<>(min >> 1), new DefaultThreadFactory());
     }

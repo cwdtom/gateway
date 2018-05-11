@@ -1,11 +1,6 @@
 package com.github.cwdtom.gateway.environment;
 
-import com.github.cwdtom.gateway.entity.Constant;
-import lombok.extern.slf4j.Slf4j;
-import org.yaml.snakeyaml.Yaml;
-
-import java.io.InputStream;
-import java.util.Map;
+import com.alibaba.fastjson.JSONObject;
 
 /**
  * http环境
@@ -13,7 +8,6 @@ import java.util.Map;
  * @author chenweidong
  * @since 1.0.0
  */
-@Slf4j
 public class HttpEnvironment {
     /**
      * 单例
@@ -38,19 +32,10 @@ public class HttpEnvironment {
     }
 
     static {
-        InputStream input = HttpEnvironment.class.getResourceAsStream(Constant.CONFIG_FILE_PATH);
-        if (input == null) {
-            log.error("application.yml is not found.");
-            System.exit(1);
-        }
-        Yaml yaml = new Yaml();
-        Map<String, Object> object = yaml.load(input);
-        // http key 对应的为map类
-        @SuppressWarnings("unchecked")
-        Map<String, Object> httpMap = (Map<String, Object>) object.get("http");
         HttpEnvironment env = new HttpEnvironment();
-        env.port = (int) httpMap.get("port");
-        env.redirectHttps = (boolean) httpMap.get("redirect-https");
+        JSONObject obj = ConfigEnvironment.getChild("http");
+        env.port = obj.getInteger("port");
+        env.redirectHttps = obj.getBoolean("redirectHttps");
         HttpEnvironment.instance = env;
     }
 

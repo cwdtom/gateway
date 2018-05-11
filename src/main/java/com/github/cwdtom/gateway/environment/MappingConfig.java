@@ -1,10 +1,9 @@
 package com.github.cwdtom.gateway.environment;
 
-import com.github.cwdtom.gateway.entity.Constant;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
-import org.yaml.snakeyaml.Yaml;
 
-import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -27,21 +26,16 @@ public class MappingConfig {
     private static Random random = new Random();
 
     static {
-        InputStream input = HttpEnvironment.class.getResourceAsStream(Constant.CONFIG_FILE_PATH);
-        if (input == null) {
-            log.error("application.yml is not found.");
-            System.exit(1);
-        }
-        Yaml yaml = new Yaml();
-        Map<String, Object> object = yaml.load(input);
-        // mapping key 对应的为map类
-        @SuppressWarnings("unchecked")
-        Map<String, String> mappingMap = (Map<String, String>) object.get("mapping");
-        Map<String, String[]> map = new HashMap<>(mappingMap.size() / 3 * 4);
-        for (Map.Entry<String, String> entry : mappingMap.entrySet()) {
-            // 去除空格
-            String urls = entry.getValue().replace(" ", "");
-            map.put(entry.getKey(), urls.split(","));
+        JSONObject obj = ConfigEnvironment.getChild("mapping");
+        Map<String, String[]> map = new HashMap<>(obj.size() / 3 * 4);
+        for (Map.Entry<String, Object> entry : obj.entrySet()) {
+            JSONArray arr = (JSONArray) entry.getValue();
+            int len = arr.size();
+            String[] urls = new String[len];
+            for (int i = 0; i < len; i++) {
+                urls[i] = arr.getString(i);
+            }
+            map.put(entry.getKey(), urls);
         }
         urlMapping = map;
     }

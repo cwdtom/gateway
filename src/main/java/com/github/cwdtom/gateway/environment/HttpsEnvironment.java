@@ -1,11 +1,7 @@
 package com.github.cwdtom.gateway.environment;
 
-import com.github.cwdtom.gateway.entity.Constant;
+import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
-import org.yaml.snakeyaml.Yaml;
-
-import java.io.InputStream;
-import java.util.Map;
 
 /**
  * https环境
@@ -34,18 +30,9 @@ public class HttpsEnvironment {
     }
 
     static {
-        InputStream input = HttpEnvironment.class.getResourceAsStream(Constant.CONFIG_FILE_PATH);
-        if (input == null) {
-            log.error("application.yml is not found.");
-            System.exit(1);
-        }
-        Yaml yaml = new Yaml();
-        Map<String, Object> object = yaml.load(input);
-        // http key 对应的为map类
-        @SuppressWarnings("unchecked")
-        Map<String, Object> httpMap = (Map<String, Object>) object.get("https");
+        JSONObject obj = ConfigEnvironment.getChild("https");
         HttpsEnvironment env = new HttpsEnvironment();
-        env.port = (int) httpMap.get("port");
+        env.port = obj.getInteger("port");
         HttpsEnvironment.instance = env;
     }
 

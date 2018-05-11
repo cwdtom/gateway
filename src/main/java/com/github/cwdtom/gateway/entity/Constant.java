@@ -8,9 +8,9 @@ package com.github.cwdtom.gateway.entity;
  */
 public class Constant {
     /**
-     * 配置文件地址
+     * 版本号
      */
-    public static final String CONFIG_FILE_PATH = "/application.yml";
+    public static final String VERSION = "1.0.0";
     /**
      * 最大单个请求大小，10MB
      */
@@ -31,4 +31,16 @@ public class Constant {
      * connection长连value
      */
     public static final String KEEP_ALIVE = "keep-alive";
+    /**
+     * 命令行参数help
+     */
+    public static final String COMMAND_HELP = "h";
+    /**
+     * 命令行参数配置文件地址
+     */
+    public static final String COMMAND_CONFIG = "c";
+    /**
+     * 命令行参数版本号
+     */
+    public static final String COMMAND_VERSION = "v";
 }

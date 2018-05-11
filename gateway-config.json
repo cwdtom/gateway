@@ -1,0 +1,20 @@
+{
+  "http": {
+    "port": 8080,
+    "redirectHttps": false
+  },
+  "https": {
+    "port": 8081
+  },
+  "threadPool": {
+    "min": 200,
+    "max": 300,
+    "timeout": 5000
+  },
+  "mapping": {
+    "localhost:8080": [
+      "123.125.115.110:80",
+      "220.181.57.216:80"
+    ]
+  }
+}
