@@ -1,0 +1,15 @@
+http:
+  port: 8080
+  redirect-https: false
+
+https:
+  port: 8081
+
+thread:
+  pool:
+    min: 20
+    max: 30
+    timeout: 10000
+
+mapping:
+  "localhost:8080": 123.125.115.110:80,220.181.57.216:80
