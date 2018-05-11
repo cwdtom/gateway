@@ -31,11 +31,11 @@ public class ThreadPool {
 
     static {
         JSONObject obj = ConfigEnvironment.getChild("threadPool");
-        int min = obj.getInteger("min");
+        int core = obj.getInteger("core");
         int max = obj.getInteger("max");
         int timeout = obj.getInteger("timeout");
-        threadPoolExecutor = new ThreadPoolExecutor(min, max, timeout, TimeUnit.MILLISECONDS,
-                new ArrayBlockingQueue<>(min >> 1), new DefaultThreadFactory());
+        threadPoolExecutor = new ThreadPoolExecutor(core, max, timeout, TimeUnit.MILLISECONDS,
+                new ArrayBlockingQueue<>(core >> 1), new DefaultThreadFactory());
     }
 
     /**

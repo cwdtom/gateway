@@ -7,7 +7,7 @@
     "port": 8081
   },
   "threadPool": {
-    "min": 200,
+    "core": 200,
     "max": 300,
     "timeout": 5000
   },
