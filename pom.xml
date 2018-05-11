@@ -7,6 +7,9 @@
     <groupId>com.github.cwdtom</groupId>
     <artifactId>gateway</artifactId>
     <version>1.0.0</version>
+    <packaging>jar</packaging>
+    <name>gateway</name>
+    <url>https://github.com/cwdtom/gateway</url>
 
     <dependencies>
         <!-- lombok -->
