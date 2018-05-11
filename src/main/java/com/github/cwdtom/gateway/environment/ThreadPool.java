@@ -51,7 +51,7 @@ public class ThreadPool {
         int max = (int) poolMap.get("max");
         int timeout = (int) poolMap.get("timeout");
         threadPoolExecutor = new ThreadPoolExecutor(min, max, timeout, TimeUnit.MILLISECONDS,
-                new ArrayBlockingQueue<>(min), new DefaultThreadFactory(max));
+                new ArrayBlockingQueue<>(min >> 1), new DefaultThreadFactory());
     }
 
     /**
@@ -59,25 +59,12 @@ public class ThreadPool {
      */
     private static class DefaultThreadFactory implements ThreadFactory {
         /**
-         * 最大线程数
-         */
-        private Integer maxThread;
-        /**
          * 原子数
          */
-        private AtomicInteger count;
-
-        DefaultThreadFactory(Integer maxThread) {
-            this.maxThread = maxThread;
-            this.count = new AtomicInteger(0);
-        }
+        private AtomicInteger count = new AtomicInteger(0);
 
         @Override
         public Thread newThread(Runnable r) {
-            if (this.count.incrementAndGet() > maxThread) {
-                this.count.decrementAndGet();
-                return null;
-            }
             return new Thread(r, "gateway-" + count.toString());
         }
     }

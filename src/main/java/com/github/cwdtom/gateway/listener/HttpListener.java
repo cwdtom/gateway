@@ -31,6 +31,7 @@ public class HttpListener {
         ServerBootstrap bootstrap = new ServerBootstrap();
         bootstrap.group(boss, worker);
         bootstrap.channel(NioServerSocketChannel.class);
+        bootstrap.childOption(ChannelOption.TCP_NODELAY, true);
         bootstrap.childHandler(new ChannelInitializer<SocketChannel>() {
             @Override
             protected void initChannel(SocketChannel socketChannel) {

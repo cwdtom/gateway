@@ -27,4 +27,8 @@ public class Constant {
      * 重定向响应体模板
      */
     public static final String REDIRECT_TEMPLATE = "<html><meta http-equiv='refresh' content='0;url=%s'></html>";
+    /**
+     * connection长连value
+     */
+    public static final String KEEP_ALIVE = "keep-alive";
 }
