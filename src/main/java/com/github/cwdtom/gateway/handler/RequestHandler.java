@@ -67,10 +67,10 @@ public class RequestHandler implements Runnable {
                 channel.writeAndFlush(ResponseUtils.buildFailResponse(HttpResponseStatus.BAD_REQUEST));
             }
         } catch (IOException ie) {
-            log.warn("post fail.", ie);
+            log.warn("request fail.", ie);
             channel.writeAndFlush(ResponseUtils.buildFailResponse(HttpResponseStatus.BAD_GATEWAY));
         } catch (Exception e) {
-            log.error("post fail.", e);
+            log.error("server error.", e);
             channel.writeAndFlush(ResponseUtils.buildFailResponse(HttpResponseStatus.INTERNAL_SERVER_ERROR));
         } finally {
             String connection = request.headers().get(HttpHeaderNames.CONNECTION);
