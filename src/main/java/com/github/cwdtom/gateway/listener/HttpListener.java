@@ -1,8 +1,11 @@
 package com.github.cwdtom.gateway.listener;
 
 import com.github.cwdtom.gateway.entity.Constant;
+import com.github.cwdtom.gateway.entity.RequestTask;
 import com.github.cwdtom.gateway.environment.HttpEnvironment;
+import com.github.cwdtom.gateway.environment.ThreadPool;
 import com.github.cwdtom.gateway.handler.HttpHandler;
+import com.github.cwdtom.gateway.handler.RequestHandler;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -13,6 +16,9 @@ import io.netty.handler.codec.http.HttpRequestDecoder;
 import io.netty.handler.codec.http.HttpResponseEncoder;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+
 /**
  * Http监听
  *
@@ -21,6 +27,11 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 public class HttpListener {
+    /**
+     * 任务队列
+     */
+    private final BlockingQueue<RequestTask> queue = new LinkedBlockingQueue<>();
+
     /**
      * 开始监听 阻塞
      */
@@ -39,9 +50,13 @@ public class HttpListener {
                 p.addLast(new HttpResponseEncoder());
                 p.addLast(new HttpRequestDecoder());
                 p.addLast(new HttpObjectAggregator(Constant.MAX_CONTENT_LEN));
-                p.addLast(new HttpHandler());
+                p.addLast(new HttpHandler(queue));
             }
         });
+        // 启动任务处理线程
+        for (int i = 0; i < 200; i++) {
+            ThreadPool.execute(new RequestHandler(queue));
+        }
         try {
             ChannelFuture channelFuture = bootstrap.bind(evn.getPort()).sync();
             if (channelFuture.isSuccess()) {

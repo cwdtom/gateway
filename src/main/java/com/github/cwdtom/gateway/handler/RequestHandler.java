@@ -1,6 +1,7 @@
 package com.github.cwdtom.gateway.handler;
 
 import com.github.cwdtom.gateway.entity.Constant;
+import com.github.cwdtom.gateway.entity.RequestTask;
 import com.github.cwdtom.gateway.environment.HttpEnvironment;
 import com.github.cwdtom.gateway.environment.MappingConfig;
 import com.github.cwdtom.gateway.util.HttpUtils;
@@ -15,6 +16,8 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
+import java.util.Queue;
+import java.util.concurrent.BlockingQueue;
 
 
 /**
@@ -27,17 +30,18 @@ import java.io.IOException;
 @AllArgsConstructor
 public class RequestHandler implements Runnable {
     /**
-     * 信道
+     * 请求任务队列
      */
-    private Channel channel;
-    /**
-     * 请求
-     */
-    private FullHttpRequest request;
+    private BlockingQueue<RequestTask> queue;
 
     @Override
     public void run() {
+        FullHttpRequest request = null;
+        Channel channel = null;
         try {
+            RequestTask task = queue.take();
+            request = task.getRequest();
+            channel = task.getChannel();
             // 判断解析是否成功
             if (request.decoderResult().isFailure()) {
                 channel.writeAndFlush(ResponseUtils.buildFailResponse(HttpResponseStatus.BAD_REQUEST));
@@ -54,7 +58,8 @@ public class RequestHandler implements Runnable {
             String mapping = MappingConfig.getMappingIsostatic(host);
             if (request.method().equals(HttpMethod.GET) && mapping != null) {
                 // 处理get请求
-                channel.writeAndFlush(HttpUtils.sendGet(Constant.HTTP_PREFIX + mapping + request.uri()));
+                // channel.writeAndFlush(HttpUtils.sendGet(Constant.HTTP_PREFIX + mapping + request.uri()));
+                channel.writeAndFlush(ResponseUtils.buildSuccessResponse("Hello world!", "text/html"));
             } else if (request.method().equals(HttpMethod.POST) && mapping != null) {
                 // 处理post请求
                 ByteBuf byteBuf = request.content();
@@ -71,11 +76,15 @@ public class RequestHandler implements Runnable {
             channel.writeAndFlush(ResponseUtils.buildFailResponse(HttpResponseStatus.BAD_GATEWAY));
         } catch (Exception e) {
             log.error("server error.", e);
-            channel.writeAndFlush(ResponseUtils.buildFailResponse(HttpResponseStatus.INTERNAL_SERVER_ERROR));
+            if (channel != null) {
+                channel.writeAndFlush(ResponseUtils.buildFailResponse(HttpResponseStatus.INTERNAL_SERVER_ERROR));
+            }
         } finally {
-            String connection = request.headers().get(HttpHeaderNames.CONNECTION);
-            if (connection == null || !Constant.KEEP_ALIVE.equals(connection)) {
-                channel.close();
+            if (request != null && channel != null) {
+                String connection = request.headers().get(HttpHeaderNames.CONNECTION);
+                if (connection == null || !Constant.KEEP_ALIVE.equals(connection)) {
+                    channel.close();
+                }
             }
         }
     }

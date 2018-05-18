@@ -49,7 +49,7 @@ public class ThreadPool {
 
         @Override
         public Thread newThread(Runnable r) {
-            return new Thread(r, "gateway-" + count.toString());
+            return new Thread(r, "gateway-" + count.incrementAndGet());
         }
     }
 }
