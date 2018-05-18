@@ -7,9 +7,7 @@
     "port": 8081
   },
   "threadPool": {
-    "core": 200,
-    "max": 300,
-    "timeout": 5000
+    "core": 200
   },
   "mapping": {
     "localhost:8080": [

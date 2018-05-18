@@ -1,12 +1,11 @@
 package com.github.cwdtom.gateway.environment;
 
 import com.alibaba.fastjson.JSONObject;
+import com.github.cwdtom.gateway.entity.RequestTask;
+import com.github.cwdtom.gateway.handler.RequestHandler;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -21,20 +20,24 @@ public class ThreadPool {
      * 线程池单例
      */
     private static ThreadPoolExecutor threadPoolExecutor;
+    /**
+     * 线程数量
+     */
+    private static int core;
 
     /**
      * 执行任务
      */
-    public static void execute(Runnable r) {
-        threadPoolExecutor.execute(r);
+    public static void startTask(BlockingQueue<RequestTask> queue) {
+        for (int i = 0; i < core; i++) {
+            threadPoolExecutor.execute(new RequestHandler(queue));
+        }
     }
 
     static {
         JSONObject obj = ConfigEnvironment.getChild("threadPool");
-        int core = obj.getInteger("core");
-        int max = obj.getInteger("max");
-        int timeout = obj.getInteger("timeout");
-        threadPoolExecutor = new ThreadPoolExecutor(core, max, timeout, TimeUnit.MILLISECONDS,
+        core = obj.getInteger("core");
+        threadPoolExecutor = new ThreadPoolExecutor(core, core, 5000, TimeUnit.MILLISECONDS,
                 new ArrayBlockingQueue<>(core >> 1), new DefaultThreadFactory());
     }
 

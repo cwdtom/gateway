@@ -16,7 +16,6 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
-import java.util.Queue;
 import java.util.concurrent.BlockingQueue;
 
 
@@ -36,54 +35,55 @@ public class RequestHandler implements Runnable {
 
     @Override
     public void run() {
-        FullHttpRequest request = null;
-        Channel channel = null;
-        try {
-            RequestTask task = queue.take();
-            request = task.getRequest();
-            channel = task.getChannel();
-            // 判断解析是否成功
-            if (request.decoderResult().isFailure()) {
-                channel.writeAndFlush(ResponseUtils.buildFailResponse(HttpResponseStatus.BAD_REQUEST));
-                return;
-            }
+        while (true) {
+            FullHttpRequest request = null;
+            Channel channel = null;
+            try {
+                RequestTask task = queue.take();
+                request = task.getRequest();
+                channel = task.getChannel();
+                // 判断解析是否成功
+                if (request.decoderResult().isFailure()) {
+                    channel.writeAndFlush(ResponseUtils.buildFailResponse(HttpResponseStatus.BAD_REQUEST));
+                    return;
+                }
 
-            String host = request.headers().get(HttpHeaderNames.HOST);
-            // 判断是否需要重定向至https
-            if (HttpEnvironment.get().isRedirectHttps()) {
-                channel.writeAndFlush(ResponseUtils.buildRedirectResponse(host));
-                return;
-            }
+                String host = request.headers().get(HttpHeaderNames.HOST);
+                // 判断是否需要重定向至https
+                if (HttpEnvironment.get().isRedirectHttps()) {
+                    channel.writeAndFlush(ResponseUtils.buildRedirectResponse(host));
+                    return;
+                }
 
-            String mapping = MappingConfig.getMappingIsostatic(host);
-            if (request.method().equals(HttpMethod.GET) && mapping != null) {
-                // 处理get请求
-                // channel.writeAndFlush(HttpUtils.sendGet(Constant.HTTP_PREFIX + mapping + request.uri()));
-                channel.writeAndFlush(ResponseUtils.buildSuccessResponse("Hello world!", "text/html"));
-            } else if (request.method().equals(HttpMethod.POST) && mapping != null) {
-                // 处理post请求
-                ByteBuf byteBuf = request.content();
-                byte[] bytes = new byte[byteBuf.readableBytes()];
-                byteBuf.readBytes(bytes);
-                channel.writeAndFlush(HttpUtils.sendPost(Constant.HTTP_PREFIX + mapping, bytes,
-                        request.headers().get(HttpHeaderNames.CONTENT_TYPE)));
-            } else {
-                // 不支持其他请求
-                channel.writeAndFlush(ResponseUtils.buildFailResponse(HttpResponseStatus.BAD_REQUEST));
-            }
-        } catch (IOException ie) {
-            log.warn("request fail.", ie);
-            channel.writeAndFlush(ResponseUtils.buildFailResponse(HttpResponseStatus.BAD_GATEWAY));
-        } catch (Exception e) {
-            log.error("server error.", e);
-            if (channel != null) {
-                channel.writeAndFlush(ResponseUtils.buildFailResponse(HttpResponseStatus.INTERNAL_SERVER_ERROR));
-            }
-        } finally {
-            if (request != null && channel != null) {
-                String connection = request.headers().get(HttpHeaderNames.CONNECTION);
-                if (connection == null || !Constant.KEEP_ALIVE.equals(connection)) {
-                    channel.close();
+                String mapping = MappingConfig.getMappingIsostatic(host);
+                if (request.method().equals(HttpMethod.GET) && mapping != null) {
+                    // 处理get请求
+                    channel.writeAndFlush(HttpUtils.sendGet(Constant.HTTP_PREFIX + mapping + request.uri()));
+                } else if (request.method().equals(HttpMethod.POST) && mapping != null) {
+                    // 处理post请求
+                    ByteBuf byteBuf = request.content();
+                    byte[] bytes = new byte[byteBuf.readableBytes()];
+                    byteBuf.readBytes(bytes);
+                    channel.writeAndFlush(HttpUtils.sendPost(Constant.HTTP_PREFIX + mapping, bytes,
+                            request.headers().get(HttpHeaderNames.CONTENT_TYPE)));
+                } else {
+                    // 不支持其他请求
+                    channel.writeAndFlush(ResponseUtils.buildFailResponse(HttpResponseStatus.BAD_REQUEST));
+                }
+            } catch (IOException ie) {
+                log.warn("request fail.", ie);
+                channel.writeAndFlush(ResponseUtils.buildFailResponse(HttpResponseStatus.BAD_GATEWAY));
+            } catch (Exception e) {
+                log.error("server error.", e);
+                if (channel != null) {
+                    channel.writeAndFlush(ResponseUtils.buildFailResponse(HttpResponseStatus.INTERNAL_SERVER_ERROR));
+                }
+            } finally {
+                if (request != null && channel != null) {
+                    String connection = request.headers().get(HttpHeaderNames.CONNECTION);
+                    if (connection == null || !Constant.KEEP_ALIVE.equals(connection)) {
+                        channel.close();
+                    }
                 }
             }
         }

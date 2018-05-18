@@ -5,7 +5,6 @@ import com.github.cwdtom.gateway.entity.RequestTask;
 import com.github.cwdtom.gateway.environment.HttpEnvironment;
 import com.github.cwdtom.gateway.environment.ThreadPool;
 import com.github.cwdtom.gateway.handler.HttpHandler;
-import com.github.cwdtom.gateway.handler.RequestHandler;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -54,9 +53,7 @@ public class HttpListener {
             }
         });
         // 启动任务处理线程
-        for (int i = 0; i < 200; i++) {
-            ThreadPool.execute(new RequestHandler(queue));
-        }
+        ThreadPool.startTask(queue);
         try {
             ChannelFuture channelFuture = bootstrap.bind(evn.getPort()).sync();
             if (channelFuture.isSuccess()) {
