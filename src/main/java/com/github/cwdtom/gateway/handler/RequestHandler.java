@@ -7,15 +7,12 @@ import com.github.cwdtom.gateway.util.HttpUtils;
 import com.github.cwdtom.gateway.util.ResponseUtils;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
-import io.netty.handler.codec.http.FullHttpRequest;
-import io.netty.handler.codec.http.HttpHeaderNames;
-import io.netty.handler.codec.http.HttpMethod;
-import io.netty.handler.codec.http.HttpResponseStatus;
+import io.netty.channel.ChannelFutureListener;
+import io.netty.handler.codec.http.*;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
-
 
 /**
  * 请求处理
@@ -37,45 +34,75 @@ public class RequestHandler implements Runnable {
 
     @Override
     public void run() {
+        FullHttpResponse response = null;
+        boolean isKeepAlive = false;
         try {
             // 判断解析是否成功
             if (request.decoderResult().isFailure()) {
-                channel.writeAndFlush(ResponseUtils.buildFailResponse(HttpResponseStatus.BAD_REQUEST));
+                response = ResponseUtils.buildFailResponse(HttpResponseStatus.BAD_REQUEST);
+                return;
+            }
+
+            // 判断连接使用次数
+            if (HttpUtil.is100ContinueExpected(request)) {
+                response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.CONTINUE);
                 return;
             }
 
             String host = request.headers().get(HttpHeaderNames.HOST);
+
             // 判断是否需要重定向至https
             if (HttpEnvironment.get().isRedirectHttps()) {
-                channel.writeAndFlush(ResponseUtils.buildRedirectResponse(host));
+                response = ResponseUtils.buildRedirectResponse(host);
                 return;
             }
 
             String mapping = MappingConfig.getMappingIsostatic(host);
+            String url = Constant.HTTP_PREFIX + mapping + request.uri();
+            isKeepAlive = HttpUtil.isKeepAlive(request);
             if (request.method().equals(HttpMethod.GET) && mapping != null) {
                 // 处理get请求
-                channel.writeAndFlush(HttpUtils.sendGet(Constant.HTTP_PREFIX + mapping + request.uri()));
+                log.info("GET {}", url);
+                response = HttpUtils.sendGet(url);
             } else if (request.method().equals(HttpMethod.POST) && mapping != null) {
                 // 处理post请求
+                log.info("POST {}", url);
                 ByteBuf byteBuf = request.content();
-                byte[] bytes = new byte[byteBuf.readableBytes()];
+                byte[] bytes = new byte[(int) HttpUtil.getContentLength(request)];
                 byteBuf.readBytes(bytes);
-                channel.writeAndFlush(HttpUtils.sendPost(Constant.HTTP_PREFIX + mapping, bytes,
-                        request.headers().get(HttpHeaderNames.CONTENT_TYPE)));
+                // 释放请求体
+                request.content().release();
+                response = HttpUtils.sendPost(url, bytes, request.headers().get(HttpHeaderNames.CONTENT_TYPE));
             } else {
                 // 不支持其他请求
-                channel.writeAndFlush(ResponseUtils.buildFailResponse(HttpResponseStatus.BAD_REQUEST));
+                log.info("NONSUPPORT {}", url);
+                response = ResponseUtils.buildFailResponse(HttpResponseStatus.BAD_REQUEST);
             }
         } catch (IOException ie) {
             log.warn("request fail.", ie);
-            channel.writeAndFlush(ResponseUtils.buildFailResponse(HttpResponseStatus.BAD_GATEWAY));
+            response = ResponseUtils.buildFailResponse(HttpResponseStatus.BAD_GATEWAY);
+            isKeepAlive = false;
         } catch (Exception e) {
             log.error("server error.", e);
-            channel.writeAndFlush(ResponseUtils.buildFailResponse(HttpResponseStatus.INTERNAL_SERVER_ERROR));
+            response = ResponseUtils.buildFailResponse(HttpResponseStatus.INTERNAL_SERVER_ERROR);
+            isKeepAlive = false;
         } finally {
-            String connection = request.headers().get(HttpHeaderNames.CONNECTION);
-            if (connection == null || !Constant.KEEP_ALIVE.equals(connection)) {
-                channel.close();
+            if (response != null) {
+                if (isKeepAlive) {
+                    response.headers().set(HttpHeaderNames.CONNECTION.toString(),
+                            HttpHeaderValues.KEEP_ALIVE.toString());
+                    channel.writeAndFlush(response);
+                } else {
+                    response.headers().set(HttpHeaderNames.CONNECTION.toString(), HttpHeaderValues.CLOSE.toString());
+                    channel.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
+                }
+            } else {
+                channel.writeAndFlush(ResponseUtils.buildFailResponse(HttpResponseStatus.SERVICE_UNAVAILABLE))
+                        .addListener(ChannelFutureListener.CLOSE);
+            }
+            // 检查请求体是否被释放
+            if (request.content().refCnt() != 0) {
+                request.content().release();
             }
         }
     }

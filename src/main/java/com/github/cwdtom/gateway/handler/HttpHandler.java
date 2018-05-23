@@ -16,6 +16,8 @@ import lombok.extern.slf4j.Slf4j;
 public class HttpHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
     @Override
     protected void channelRead0(ChannelHandlerContext channelHandlerContext, FullHttpRequest request) {
+        // 保留请求体
+        request.content().retain();
         ThreadPool.execute(new RequestHandler(channelHandlerContext.channel(), request));
     }
 

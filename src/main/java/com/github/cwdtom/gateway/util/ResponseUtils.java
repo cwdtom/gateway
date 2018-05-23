@@ -23,7 +23,7 @@ public class ResponseUtils {
      */
     public static FullHttpResponse buildFailResponse(HttpResponseStatus status) {
         FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, status);
-        response.headers().set(HttpHeaderNames.CONTENT_LENGTH, 0);
+        response.headers().set(HttpHeaderNames.CONTENT_LENGTH.toString(), response.content().readableBytes());
         return response;
     }
 
@@ -37,8 +37,8 @@ public class ResponseUtils {
     public static FullHttpResponse buildSuccessResponse(String content, String contentType) {
         FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK,
                 Unpooled.wrappedBuffer(content.getBytes()));
-        response.headers().set(HttpHeaderNames.CONTENT_TYPE, contentType);
-        response.headers().set(HttpHeaderNames.CONTENT_LENGTH, response.content().readableBytes());
+        response.headers().set(HttpHeaderNames.CONTENT_TYPE.toString(), contentType)
+                .set(HttpHeaderNames.CONTENT_LENGTH.toString(), response.content().readableBytes());
         return response;
     }
 
@@ -56,8 +56,8 @@ public class ResponseUtils {
         FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.valueOf(strings[0]),
                 HttpResponseStatus.valueOf(Integer.parseInt(strings[1])),
                 Unpooled.wrappedBuffer(bytes));
-        response.headers().set(HttpHeaderNames.CONTENT_TYPE, connection.getContentType());
-        response.headers().set(HttpHeaderNames.CONTENT_LENGTH, connection.getContentLength());
+        response.headers().set(HttpHeaderNames.CONTENT_TYPE.toString(), connection.getContentType())
+                .set(HttpHeaderNames.CONTENT_LENGTH.toString(), response.content().readableBytes());
         return response;
     }
 
@@ -71,8 +71,8 @@ public class ResponseUtils {
         byte[] content = String.format(Constant.REDIRECT_TEMPLATE, Constant.HTTPS_PREFIX + host).getBytes();
         FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK,
                 Unpooled.wrappedBuffer(content));
-        response.headers().set(HttpHeaderNames.CONTENT_TYPE, "text/html");
-        response.headers().set(HttpHeaderNames.CONTENT_LENGTH, content.length);
+        response.headers().set(HttpHeaderNames.CONTENT_TYPE.toString(), "text/html")
+                .set(HttpHeaderNames.CONTENT_LENGTH.toString(), response.content().readableBytes());
         return response;
     }
 }

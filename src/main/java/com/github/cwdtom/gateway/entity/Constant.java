@@ -28,10 +28,6 @@ public class Constant {
      */
     public static final String REDIRECT_TEMPLATE = "<html><meta http-equiv='refresh' content='0;url=%s'></html>";
     /**
-     * connection长连value
-     */
-    public static final String KEEP_ALIVE = "keep-alive";
-    /**
      * 命令行参数help
      */
     public static final String COMMAND_HELP = "h";
