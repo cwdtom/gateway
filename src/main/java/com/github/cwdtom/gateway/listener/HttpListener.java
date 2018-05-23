@@ -8,6 +8,7 @@ import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.handler.codec.http.HttpContentCompressor;
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpRequestDecoder;
 import io.netty.handler.codec.http.HttpResponseEncoder;
@@ -38,6 +39,8 @@ public class HttpListener {
                 ChannelPipeline p = socketChannel.pipeline();
                 p.addLast(new HttpResponseEncoder());
                 p.addLast(new HttpRequestDecoder());
+                p.addLast(new HttpObjectAggregator(1024 * 1024 * 64));
+                p.addLast(new HttpContentCompressor());
                 p.addLast(new HttpObjectAggregator(Constant.MAX_CONTENT_LEN));
                 p.addLast(new HttpHandler());
             }
