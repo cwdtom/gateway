@@ -1,10 +1,9 @@
 package com.github.cwdtom.gateway.util;
 
-import com.alibaba.fastjson.JSONObject;
-import io.netty.buffer.ByteBuf;
 import io.netty.handler.codec.http.FullHttpResponse;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
 
