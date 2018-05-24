@@ -10,7 +10,7 @@ public class Constant {
     /**
      * 版本号
      */
-    public static final String VERSION = "1.0.0";
+    public static final String VERSION = "1.1.0";
     /**
      * 最大单个请求大小，10MB
      */
