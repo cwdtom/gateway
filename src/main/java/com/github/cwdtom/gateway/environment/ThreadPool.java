@@ -29,6 +29,13 @@ public class ThreadPool {
         threadPoolExecutor.execute(r);
     }
 
+    /**
+     * 销毁线程池
+     */
+    public static void shutdown() {
+        threadPoolExecutor.shutdown();
+    }
+
     static {
         JSONObject obj = ConfigEnvironment.getChild("threadPool");
         int core = obj.getInteger("core");

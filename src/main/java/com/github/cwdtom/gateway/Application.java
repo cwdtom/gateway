@@ -2,7 +2,9 @@ package com.github.cwdtom.gateway;
 
 import com.github.cwdtom.gateway.entity.Constant;
 import com.github.cwdtom.gateway.environment.ConfigEnvironment;
+import com.github.cwdtom.gateway.environment.ThreadPool;
 import com.github.cwdtom.gateway.listener.HttpListener;
+import com.github.cwdtom.gateway.listener.HttpsListener;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.cli.*;
 
@@ -43,6 +45,20 @@ public class Application {
         }
 
         // 启动http监听
-        new HttpListener().listen();
+        HttpListener http = new HttpListener();
+        ThreadPool.execute(http);
+        // 启动https监听
+        HttpsListener https = new HttpsListener();
+        ThreadPool.execute(https);
+
+        // 添加销毁事件
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            http.shutdown();
+            System.out.println("http listener was shutdown!");
+            https.shutdown();
+            System.out.println("https listener was shutdown!");
+            ThreadPool.shutdown();
+            System.out.println("gateway was shutdown!");
+        }));
     }
 }
