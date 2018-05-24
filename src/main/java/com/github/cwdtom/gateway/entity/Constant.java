@@ -14,7 +14,7 @@ public class Constant {
     /**
      * 最大单个请求大小，10MB
      */
-    public static final int MAX_CONTENT_LEN = 10 * 1024 * 1024;
+    public static final int MAX_CONTENT_LEN = 64 * 1024 * 1024;
     /**
      * http前缀
      */

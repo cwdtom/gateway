@@ -60,7 +60,6 @@ public class HttpListener implements Runnable {
                 ChannelPipeline p = socketChannel.pipeline();
                 p.addLast(new HttpResponseEncoder());
                 p.addLast(new HttpRequestDecoder());
-                p.addLast(new HttpObjectAggregator(1024 * 1024 * 64));
                 p.addLast(new HttpContentCompressor());
                 p.addLast(new HttpObjectAggregator(Constant.MAX_CONTENT_LEN));
                 p.addLast(new HttpHandler());
