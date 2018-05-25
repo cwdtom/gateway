@@ -1,7 +1,6 @@
 package com.github.cwdtom.gateway.environment;
 
 import com.alibaba.fastjson.JSONObject;
-import lombok.extern.slf4j.Slf4j;
 
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadFactory;
@@ -15,7 +14,6 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @author chenweidong
  * @since 1.0.0
  */
-@Slf4j
 public class ThreadPool {
     /**
      * 线程池单例

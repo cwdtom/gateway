@@ -56,6 +56,9 @@ public class HttpsListener implements Runnable {
      */
     private void listen() {
         HttpsEnvironment env = HttpsEnvironment.get();
+        if (!env.isEnable()) {
+            return;
+        }
         ServerBootstrap bootstrap = new ServerBootstrap();
         bootstrap.group(boss, worker);
         bootstrap.channel(NioServerSocketChannel.class);

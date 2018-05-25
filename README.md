@@ -1,6 +1,6 @@
 # Gateway
 
-![Version](https://img.shields.io/badge/version-1.2.0-green.svg)
+![Version](https://img.shields.io/badge/version-1.2.1-green.svg)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](http://opensource.org/licenses/MIT)
 
 ## Overview
@@ -24,6 +24,7 @@
         "redirectHttps": false
       },
       "https": {
+        "enable": false,
         "port": 8081,
         "keyPwd": "123456",
         "keyPath": "/Users/chenweidong/workspace/gateway/ssl/cwd.keystore"
@@ -53,6 +54,7 @@
         1. port: 端口号
         1. redirectHttps: 是否重定向至https
     1. https: https相关配置
+        1. enable: 是否开启
         1. port: 端口号
         1. keyPwd: 证书密码
         1. keyPath: 证书路径

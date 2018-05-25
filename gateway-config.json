@@ -4,6 +4,7 @@
     "redirectHttps": false
   },
   "https": {
+    "enable": false,
     "port": 8081,
     "keyPwd": "123456",
     "keyPath": "/Users/chenweidong/ssl/cwd.keystore"

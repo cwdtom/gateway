@@ -1,7 +1,6 @@
 package com.github.cwdtom.gateway.environment;
 
 import com.alibaba.fastjson.JSONObject;
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * https环境
@@ -9,12 +8,15 @@ import lombok.extern.slf4j.Slf4j;
  * @author chenweidong
  * @since 1.0.0
  */
-@Slf4j
 public class HttpsEnvironment {
     /**
      * 单例
      */
     private static HttpsEnvironment instance;
+    /**
+     * 是否开启
+     */
+    private boolean enable;
     /**
      * 端口号
      */
@@ -40,6 +42,7 @@ public class HttpsEnvironment {
     static {
         JSONObject obj = ConfigEnvironment.getChild("https");
         HttpsEnvironment env = new HttpsEnvironment();
+        env.enable = obj.getBoolean("enable");
         env.port = obj.getInteger("port");
         env.keyPwd = obj.getString("keyPwd");
         env.keyPath = obj.getString("keyPath");
@@ -56,5 +59,9 @@ public class HttpsEnvironment {
 
     public String getKeyPath() {
         return keyPath;
+    }
+
+    public boolean isEnable() {
+        return enable;
     }
 }
