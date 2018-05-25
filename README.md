@@ -1,6 +1,6 @@
 # Gateway
 
-![Version](https://img.shields.io/badge/version-1.1.0-green.svg)
+![Version](https://img.shields.io/badge/version-1.2.0-green.svg)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](http://opensource.org/licenses/MIT)
 
 ## Overview
@@ -42,6 +42,10 @@
           "123.125.115.110:80",
           "220.181.57.216:80"
         ]
+      },
+      "cors": {
+        "enable": true,
+        "whiteList": []
       }
     }
     ```
@@ -57,3 +61,6 @@
         1. max: 最大线程数量
         1. timeout: 超时时间
     1. mapping: 映射配置，每个host对应多个反向代理地址
+    1. cors: 跨域相关配置
+        1. enable: 是否开启跨域
+        1. whiteList: 跨域白名单，列表为空且开启跨域情况下为允许全部origin跨域请求

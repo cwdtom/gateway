@@ -75,4 +75,18 @@ public class ResponseUtils {
                 .set(HttpHeaderNames.CONTENT_LENGTH.toString(), response.content().readableBytes());
         return response;
     }
+
+    /**
+     * 构造预校验响应体
+     *
+     * @return 响应
+     */
+    public static FullHttpResponse buildOptionsResponse() {
+        FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
+        response.headers().set(HttpHeaderNames.ACCESS_CONTROL_ALLOW_ORIGIN.toString(), "*")
+                .set(HttpHeaderNames.ACCESS_CONTROL_ALLOW_METHODS.toString(), "GET, POST")
+                .set(HttpHeaderNames.ACCESS_CONTROL_ALLOW_HEADERS.toString(), HttpHeaderNames.CONTENT_TYPE)
+                .set(HttpHeaderNames.CONTENT_LENGTH.toString(), response.content().readableBytes());
+        return response;
+    }
 }

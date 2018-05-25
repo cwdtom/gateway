@@ -6,7 +6,7 @@
   "https": {
     "port": 8081,
     "keyPwd": "123456",
-    "keyPath": "/Users/chenweidong/workspace/gateway/ssl/cwd.keystore"
+    "keyPath": "/Users/chenweidong/ssl/cwd.keystore"
   },
   "threadPool": {
     "core": 200,
@@ -22,5 +22,9 @@
       "123.125.115.110:80",
       "220.181.57.216:80"
     ]
+  },
+  "cors": {
+    "enable": true,
+    "whiteList": []
   }
 }
