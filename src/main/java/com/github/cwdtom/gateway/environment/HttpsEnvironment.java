@@ -42,10 +42,14 @@ public class HttpsEnvironment {
     static {
         JSONObject obj = ConfigEnvironment.getChild("https");
         HttpsEnvironment env = new HttpsEnvironment();
-        env.enable = obj.getBoolean("enable");
-        env.port = obj.getInteger("port");
-        env.keyPwd = obj.getString("keyPwd");
-        env.keyPath = obj.getString("keyPath");
+        if (obj == null) {
+            env.enable = false;
+        } else {
+            env.enable = obj.getBoolean("enable");
+            env.port = obj.getInteger("port");
+            env.keyPwd = obj.getString("keyPwd");
+            env.keyPath = obj.getString("keyPath");
+        }
         HttpsEnvironment.instance = env;
     }
 
