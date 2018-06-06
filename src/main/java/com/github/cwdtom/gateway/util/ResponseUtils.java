@@ -1,6 +1,6 @@
 package com.github.cwdtom.gateway.util;
 
-import com.github.cwdtom.gateway.entity.Constant;
+import com.github.cwdtom.gateway.constant.Constant;
 import io.netty.buffer.Unpooled;
 import io.netty.handler.codec.http.*;
 import org.apache.commons.io.IOUtils;

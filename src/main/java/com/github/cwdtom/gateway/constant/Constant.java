@@ -1,4 +1,4 @@
-package com.github.cwdtom.gateway.entity;
+package com.github.cwdtom.gateway.constant;
 
 /**
  * 常量

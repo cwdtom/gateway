@@ -27,5 +27,11 @@
   "cors": {
     "enable": true,
     "whiteList": []
+  },
+  "flowLimits": {
+    "enable": true,
+    "timeout": 500,
+    "rate": 2000000000,
+    "maxSize": 200
   }
 }

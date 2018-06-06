@@ -1,8 +1,9 @@
 package com.github.cwdtom.gateway;
 
-import com.github.cwdtom.gateway.entity.Constant;
+import com.github.cwdtom.gateway.constant.Constant;
 import com.github.cwdtom.gateway.environment.ConfigEnvironment;
 import com.github.cwdtom.gateway.environment.ThreadPool;
+import com.github.cwdtom.gateway.limit.TokenProvider;
 import com.github.cwdtom.gateway.listener.HttpListener;
 import com.github.cwdtom.gateway.listener.HttpsListener;
 import lombok.extern.slf4j.Slf4j;
@@ -50,6 +51,9 @@ public class Application {
         // 启动https监听
         HttpsListener https = new HttpsListener();
         ThreadPool.execute(https);
+        // 启动限流
+        TokenProvider token = new TokenProvider();
+        ThreadPool.execute(token);
 
         // 添加销毁事件
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
@@ -57,6 +61,8 @@ public class Application {
             System.out.println("http listener was shutdown!");
             https.shutdown();
             System.out.println("https listener was shutdown!");
+            token.shutdown();
+            System.out.println("token provider was shutdown!");
             ThreadPool.shutdown();
             System.out.println("gateway was shutdown!");
         }));

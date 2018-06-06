@@ -1,6 +1,6 @@
 package com.github.cwdtom.gateway.listener;
 
-import com.github.cwdtom.gateway.entity.Constant;
+import com.github.cwdtom.gateway.constant.Constant;
 import com.github.cwdtom.gateway.environment.HttpEnvironment;
 import com.github.cwdtom.gateway.handler.HttpHandler;
 import io.netty.bootstrap.ServerBootstrap;
@@ -62,7 +62,7 @@ public class HttpListener implements Runnable {
                 p.addLast(new HttpRequestDecoder());
                 p.addLast(new HttpContentCompressor());
                 p.addLast(new HttpObjectAggregator(Constant.MAX_CONTENT_LEN));
-                p.addLast(new HttpHandler());
+                p.addLast(new HttpHandler(false));
             }
         });
         try {

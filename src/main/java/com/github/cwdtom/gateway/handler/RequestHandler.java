@@ -1,9 +1,11 @@
 package com.github.cwdtom.gateway.handler;
 
-import com.github.cwdtom.gateway.entity.Constant;
+import com.github.cwdtom.gateway.constant.Constant;
 import com.github.cwdtom.gateway.environment.CorsEnvironment;
+import com.github.cwdtom.gateway.environment.FlowLimitsEnvironment;
 import com.github.cwdtom.gateway.environment.HttpEnvironment;
 import com.github.cwdtom.gateway.environment.MappingConfig;
+import com.github.cwdtom.gateway.limit.TokenPool;
 import com.github.cwdtom.gateway.util.HttpUtils;
 import com.github.cwdtom.gateway.util.ResponseUtils;
 import io.netty.buffer.ByteBuf;
@@ -35,15 +37,31 @@ public class RequestHandler implements Runnable {
      * 响应
      */
     private FullHttpResponse response;
+    /**
+     * 是否是https请求
+     */
+    private boolean isHttps;
 
-    public RequestHandler(Channel channel, FullHttpRequest request) {
+    public RequestHandler(Channel channel, FullHttpRequest request, boolean isHttps) {
         this.channel = channel;
         this.request = request;
+        this.isHttps = isHttps;
     }
 
     @Override
     public void run() {
         try {
+            String host = request.headers().get(HttpHeaderNames.HOST);
+            // 判断是否需要重定向至https
+            if (isHttps && HttpEnvironment.get().isRedirectHttps()) {
+                response = ResponseUtils.buildRedirectResponse(host);
+                return;
+            }
+            // 判断是否需要限流
+            if (FlowLimitsEnvironment.get().isEnable() && !TokenPool.take()) {
+                response = ResponseUtils.buildFailResponse(HttpResponseStatus.REQUEST_TIMEOUT);
+                return;
+            }
             // 判断解析是否成功
             if (request.decoderResult().isFailure()) {
                 response = ResponseUtils.buildFailResponse(HttpResponseStatus.BAD_REQUEST);
@@ -52,12 +70,6 @@ public class RequestHandler implements Runnable {
             // 判断连接使用次数
             if (HttpUtil.is100ContinueExpected(request)) {
                 response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.CONTINUE);
-                return;
-            }
-            String host = request.headers().get(HttpHeaderNames.HOST);
-            // 判断是否需要重定向至https
-            if (HttpEnvironment.get().isRedirectHttps()) {
-                response = ResponseUtils.buildRedirectResponse(host);
                 return;
             }
             process(host);

@@ -1,10 +1,14 @@
 # Gateway
 
-![Version](https://img.shields.io/badge/version-1.2.1-green.svg)
+![Version](https://img.shields.io/badge/version-1.3.0-green.svg)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](http://opensource.org/licenses/MIT)
 
 ## Overview
-- api网关
+- 基于netty的nio服务网关
+1. 支持http协议
+1. 支持https协议
+1. 支持cors协议
+1. 支持基于本地令牌桶的限流
     
 ## Usage
 
@@ -47,6 +51,12 @@
       "cors": {
         "enable": true,
         "whiteList": []
+      },
+      "flowLimits": {
+        "enable": true,
+        "timeout": 500,
+        "rate": 2000000000,
+        "maxSize": 200
       }
     }
     ```
@@ -66,3 +76,8 @@
     1. cors: 跨域相关配置
         1. enable: 是否开启跨域
         1. whiteList: 跨域白名单，列表为空且开启跨域情况下为允许全部origin跨域请求
+    1. flowLimits: 限流配置
+        1. enable: 是否开启限流
+        1. timeout: 请求超时时间，单位ms
+        1. rate: 令牌生产速率，单位ns
+        1. maxSize: 令牌桶大小
