@@ -31,7 +31,7 @@
   "flowLimits": {
     "enable": true,
     "timeout": 500,
-    "rate": 2000000000,
+    "rate": 5,
     "maxSize": 200
   }
 }

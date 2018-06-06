@@ -23,7 +23,7 @@ public class FlowLimitsEnvironment {
      */
     private long timeout;
     /**
-     * 令牌产生速率ns
+     * 令牌产生速率ms
      */
     private long rate;
     /**

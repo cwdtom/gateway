@@ -1,6 +1,6 @@
 # Gateway
 
-![Version](https://img.shields.io/badge/version-1.3.0-green.svg)
+![Version](https://img.shields.io/badge/version-1.4.0-green.svg)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](http://opensource.org/licenses/MIT)
 
 ## Overview
@@ -79,5 +79,5 @@
     1. flowLimits: 限流配置
         1. enable: 是否开启限流
         1. timeout: 请求超时时间，单位ms
-        1. rate: 令牌生产速率，单位ns
+        1. rate: 令牌生产速率，单位ms
         1. maxSize: 令牌桶大小

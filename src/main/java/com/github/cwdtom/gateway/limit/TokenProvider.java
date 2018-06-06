@@ -20,11 +20,10 @@ public class TokenProvider implements Runnable {
     public void run() {
         FlowLimitsEnvironment env = FlowLimitsEnvironment.get();
         if (env.isEnable()) {
-            int msNs = 1000000;
             try {
                 while (true) {
                     TokenPool.offer();
-                    Thread.sleep(env.getRate() / msNs, (int) env.getRate() % msNs);
+                    Thread.sleep(env.getRate());
                     if (interrupted) {
                         return;
                     }

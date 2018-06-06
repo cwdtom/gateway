@@ -6,6 +6,7 @@ import com.github.cwdtom.gateway.environment.FlowLimitsEnvironment;
 import com.github.cwdtom.gateway.environment.HttpEnvironment;
 import com.github.cwdtom.gateway.environment.MappingConfig;
 import com.github.cwdtom.gateway.limit.TokenPool;
+import com.github.cwdtom.gateway.mapping.Mapper;
 import com.github.cwdtom.gateway.util.HttpUtils;
 import com.github.cwdtom.gateway.util.ResponseUtils;
 import io.netty.buffer.ByteBuf;
@@ -50,8 +51,13 @@ public class RequestHandler implements Runnable {
 
     @Override
     public void run() {
+        String host = request.headers().get(HttpHeaderNames.HOST);
+        Mapper mapper = MappingConfig.getMappingIsostatic(host);
         try {
-            String host = request.headers().get(HttpHeaderNames.HOST);
+            // 反向代理地址不存在
+            if (mapper == null) {
+                return;
+            }
             // 判断是否需要重定向至https
             if (isHttps && HttpEnvironment.get().isRedirectHttps()) {
                 response = ResponseUtils.buildRedirectResponse(host);
@@ -72,12 +78,16 @@ public class RequestHandler implements Runnable {
                 response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.CONTINUE);
                 return;
             }
-            process(host);
+
+            process(mapper.getTarget());
         } catch (Exception e) {
             log.error("server error.", e);
             response = ResponseUtils.buildFailResponse(HttpResponseStatus.BAD_GATEWAY);
+            log.error("{} {} offline.", host, mapper.exception(request.method(), request.uri(),
+                    request.headers().get(HttpHeaderNames.CONTENT_TYPE)));
         } finally {
-            if (response != null) {
+            if (response != null && mapper != null) {
+                mapper.release();
                 ChannelFuture cf = channel.writeAndFlush(response);
                 if (!HttpUtil.isKeepAlive(response)) {
                     cf.addListener(ChannelFutureListener.CLOSE);
@@ -97,11 +107,10 @@ public class RequestHandler implements Runnable {
     /**
      * 处理请求
      *
-     * @param host host
+     * @param mapping 映射地址
      * @throws IOException 转发失败
      */
-    private void process(String host) throws IOException {
-        String mapping = MappingConfig.getMappingIsostatic(host);
+    private void process(String mapping) throws IOException {
         String url = Constant.HTTP_PREFIX + mapping + request.uri();
         if (request.method().equals(HttpMethod.GET) && mapping != null) {
             // 处理get请求

@@ -6,6 +6,7 @@ import com.github.cwdtom.gateway.environment.ThreadPool;
 import com.github.cwdtom.gateway.limit.TokenProvider;
 import com.github.cwdtom.gateway.listener.HttpListener;
 import com.github.cwdtom.gateway.listener.HttpsListener;
+import com.github.cwdtom.gateway.mapping.SurvivalCheck;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.cli.*;
 
@@ -54,6 +55,9 @@ public class Application {
         // 启动限流
         TokenProvider token = new TokenProvider();
         ThreadPool.execute(token);
+        // 开启生存检查
+        SurvivalCheck check = new SurvivalCheck();
+        ThreadPool.execute(check);
 
         // 添加销毁事件
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
@@ -63,6 +67,8 @@ public class Application {
             System.out.println("https listener was shutdown!");
             token.shutdown();
             System.out.println("token provider was shutdown!");
+            check.shutdown();
+            System.out.println("survival check was shutdown!");
             ThreadPool.shutdown();
             System.out.println("gateway was shutdown!");
         }));

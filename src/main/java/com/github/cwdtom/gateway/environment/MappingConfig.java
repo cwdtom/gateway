@@ -2,10 +2,12 @@ package com.github.cwdtom.gateway.environment;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.github.cwdtom.gateway.mapping.Mapper;
 
-import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Random;
+import java.util.Vector;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * 映射配置
@@ -17,21 +19,17 @@ public class MappingConfig {
     /**
      * 映射表
      */
-    private static Map<String, String[]> urlMapping;
-    /**
-     * 随机对象
-     */
-    private static Random random = new Random();
+    private static Map<String, List<Mapper>> urlMapping;
 
     static {
         JSONObject obj = ConfigEnvironment.getChild("mapping");
-        Map<String, String[]> map = new HashMap<>(obj.size() / 3 * 4);
+        Map<String, List<Mapper>> map = new ConcurrentHashMap<>(obj.size() / 3 * 4);
         for (Map.Entry<String, Object> entry : obj.entrySet()) {
             JSONArray arr = (JSONArray) entry.getValue();
             int len = arr.size();
-            String[] urls = new String[len];
+            List<Mapper> urls = new Vector<>(len);
             for (int i = 0; i < len; i++) {
-                urls[i] = arr.getString(i);
+                urls.add(new Mapper(arr.getString(i)));
             }
             map.put(entry.getKey(), urls);
         }
@@ -44,12 +42,23 @@ public class MappingConfig {
      * @param host 原地址
      * @return 映射地址
      */
-    public static String getMappingIsostatic(String host) {
-        String[] urls = urlMapping.get(host);
-        if (urls == null) {
+    public static Mapper getMappingIsostatic(String host) {
+        List<Mapper> urls = urlMapping.get(host);
+        if (urls == null || urls.size() == 0) {
             return null;
         }
-        int index = random.nextInt(urls.length);
-        return urls[index];
+        Mapper mapper = null;
+        for (Mapper m : urls) {
+            if (mapper == null) {
+                if (m.isOnline()) {
+                    mapper = m;
+                }
+            } else {
+                if (mapper.compareTo(m) < 0) {
+                    mapper = m;
+                }
+            }
+        }
+        return mapper;
     }
 }
