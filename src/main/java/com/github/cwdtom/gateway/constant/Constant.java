@@ -39,4 +39,8 @@ public class Constant {
      * 命令行参数版本号
      */
     public static final String COMMAND_VERSION = "v";
+    /**
+     * 熔断临界错误次数
+     */
+    public static final int OFFLINE_COUNT = 3;
 }

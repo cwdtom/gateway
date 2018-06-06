@@ -1,5 +1,6 @@
 package com.github.cwdtom.gateway.mapping;
 
+import com.github.cwdtom.gateway.constant.Constant;
 import io.netty.handler.codec.http.HttpMethod;
 
 /**
@@ -63,7 +64,7 @@ public class Mapper implements Comparable<Mapper> {
      * @return 是否健康
      */
     public boolean isOnline() {
-        return exceptionCount < 3;
+        return exceptionCount < Constant.OFFLINE_COUNT;
     }
 
     @Override
