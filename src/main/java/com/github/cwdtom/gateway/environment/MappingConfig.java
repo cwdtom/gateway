@@ -37,6 +37,15 @@ public class MappingConfig {
     }
 
     /**
+     * 获取mapping
+     *
+     * @return mapping
+     */
+    public static Map<String, List<Mapper>> get() {
+        return urlMapping;
+    }
+
+    /**
      * 获取映射地址
      *
      * @param host 原地址

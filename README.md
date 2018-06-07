@@ -1,6 +1,6 @@
 # Gateway
 
-![Version](https://img.shields.io/badge/version-1.4.0-green.svg)
+![Version](https://img.shields.io/badge/version-1.4.1-green.svg)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](http://opensource.org/licenses/MIT)
 
 ## Overview
@@ -34,8 +34,8 @@
         "keyPath": "/Users/chenweidong/workspace/gateway/ssl/cwd.keystore"
       },
       "threadPool": {
-        "core": 200,
-        "max": 300,
+        "core": 150,
+        "max": 200,
         "timeout": 5000
       },
       "mapping": {
@@ -68,7 +68,7 @@
         1. port: 端口号
         1. keyPwd: 证书密码
         1. keyPath: 证书路径
-    1. threadPool: 线程池配置
+    1. threadPool: 单个反射配置的线程池配置
         1. core: 核心线程数量
         1. max: 最大线程数量
         1. timeout: 超时时间

@@ -39,19 +39,23 @@ public class RequestHandler implements Runnable {
      */
     private FullHttpResponse response;
     /**
+     * host
+     */
+    private String host;
+    /**
      * 是否是https请求
      */
     private boolean isHttps;
 
-    public RequestHandler(Channel channel, FullHttpRequest request, boolean isHttps) {
+    public RequestHandler(Channel channel, FullHttpRequest request, String host, boolean isHttps) {
         this.channel = channel;
         this.request = request;
+        this.host = host;
         this.isHttps = isHttps;
     }
 
     @Override
     public void run() {
-        String host = request.headers().get(HttpHeaderNames.HOST);
         Mapper mapper = MappingConfig.getMappingIsostatic(host);
         try {
             // 反向代理地址不存在

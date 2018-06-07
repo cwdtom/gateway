@@ -10,8 +10,8 @@
     "keyPath": "/Users/chenweidong/ssl/cwd.keystore"
   },
   "threadPool": {
-    "core": 200,
-    "max": 300,
+    "core": 150,
+    "max": 200,
     "timeout": 5000
   },
   "mapping": {

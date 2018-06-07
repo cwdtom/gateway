@@ -4,6 +4,7 @@ import com.github.cwdtom.gateway.environment.ThreadPool;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.FullHttpRequest;
+import io.netty.handler.codec.http.HttpHeaderNames;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -23,9 +24,10 @@ public class HttpHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
 
     @Override
     protected void channelRead0(ChannelHandlerContext channelHandlerContext, FullHttpRequest request) {
+        String host = request.headers().get(HttpHeaderNames.HOST);
         // 保留请求体
         request.content().retain();
-        ThreadPool.execute(new RequestHandler(channelHandlerContext.channel(), request, isHttps));
+        ThreadPool.execute(host, new RequestHandler(channelHandlerContext.channel(), request, host, isHttps));
     }
 
     @Override
