@@ -9,11 +9,11 @@ import io.netty.handler.codec.http.HttpMethod;
  * @author chenweidong
  * @since 1.4.0
  */
-public class Mapper implements Comparable<Mapper> {
+public class Mapper {
     /**
-     * 调用次数
+     * 权重
      */
-    private int count;
+    private int weight;
     /**
      * 异常次数
      */
@@ -23,22 +23,19 @@ public class Mapper implements Comparable<Mapper> {
      */
     String target;
 
-    public Mapper(String target) {
+    public Mapper(String target, Integer weight) {
         this.target = target;
-        this.count = 0;
+        // 无权重时默认值100
+        this.weight = weight == null || weight < 0 ? 100 : weight;
         this.exceptionCount = 0;
     }
 
     public String getTarget() {
-        this.count++;
         return target;
     }
 
-    /**
-     * 释放
-     */
-    public void release() {
-        this.count--;
+    public int getWeight() {
+        return weight;
     }
 
     /**
@@ -65,13 +62,5 @@ public class Mapper implements Comparable<Mapper> {
      */
     public boolean isOnline() {
         return exceptionCount < Constant.OFFLINE_COUNT;
-    }
-
-    @Override
-    public int compareTo(Mapper o) {
-        if (!this.isOnline()) {
-            return 1;
-        }
-        return Integer.compare(o.count, this.count);
     }
 }

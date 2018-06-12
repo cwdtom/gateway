@@ -1,6 +1,6 @@
 # Gateway
 
-![Version](https://img.shields.io/badge/version-1.4.1-green.svg)
+![Version](https://img.shields.io/badge/version-1.5.0-green.svg)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](http://opensource.org/licenses/MIT)
 
 ## Overview
@@ -10,6 +10,7 @@
 1. 支持cors协议
 1. 支持基于本地令牌桶的限流
 1. 相对独立的线程池
+1. 负载均衡采用 RandomLoadBalance 随机负载均衡算法
 
 ## Usage
 
@@ -41,12 +42,14 @@
       },
       "mapping": {
         "localhost:8080": [
-          "123.125.115.110:80",
-          "220.181.57.216:80"
-        ],
-        "localhost:8081": [
-          "123.125.115.110:80",
-          "220.181.57.216:80"
+          {
+            "url": "123.125.115.110:80",
+            "weight": 200
+          },
+          {
+            "url": "220.181.57.216:80",
+            "weight": 100
+          }
         ]
       },
       "cors": {
@@ -74,6 +77,8 @@
         1. max: 最大线程数量
         1. timeout: 超时时间
     1. mapping: 映射配置，每个host对应多个反向代理地址
+        1. url: 反向代理地址
+        1. weight: 权重
     1. cors: 跨域相关配置
         1. enable: 是否开启跨域
         1. whiteList: 跨域白名单，列表为空且开启跨域情况下为允许全部origin跨域请求

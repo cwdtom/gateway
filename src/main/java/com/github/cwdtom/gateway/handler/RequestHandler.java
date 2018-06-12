@@ -91,7 +91,6 @@ public class RequestHandler implements Runnable {
                     request.headers().get(HttpHeaderNames.CONTENT_TYPE)));
         } finally {
             if (response != null && mapper != null) {
-                mapper.release();
                 ChannelFuture cf = channel.writeAndFlush(response);
                 if (!HttpUtil.isKeepAlive(response)) {
                     cf.addListener(ChannelFutureListener.CLOSE);
