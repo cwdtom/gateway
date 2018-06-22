@@ -69,11 +69,18 @@ public class ThreadPool {
         int core = obj.getInteger("core");
         int max = obj.getInteger("max");
         int timeout = obj.getInteger("timeout");
-        Map<String, List<Mapper>> map = MappingConfig.get();
-        threadPoolMap = new HashMap<>(map.size() / 3 * 4);
-        for (String key : map.keySet()) {
+        Map<String, List<Mapper>> mappingMap = MappingConfig.get();
+        Map<String, String> pathMap = StaticConfig.get();
+        threadPoolMap = new HashMap<>((mappingMap.size() + pathMap.size()) / 3 * 4);
+        for (String key : mappingMap.keySet()) {
             threadPoolMap.put(key, new ThreadPoolExecutor(core, max, timeout, TimeUnit.MILLISECONDS,
                     new ArrayBlockingQueue<>(core >> 1), new DefaultThreadFactory(key)));
+        }
+        for (String key : pathMap.keySet()) {
+            if (!threadPoolMap.containsKey(key)) {
+            threadPoolMap.put(key, new ThreadPoolExecutor(core, max, timeout, TimeUnit.MILLISECONDS,
+                    new ArrayBlockingQueue<>(core >> 1), new DefaultThreadFactory(key)));
+            }
         }
     }
 

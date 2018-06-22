@@ -1,10 +1,7 @@
 package com.github.cwdtom.gateway.handler;
 
 import com.github.cwdtom.gateway.constant.Constant;
-import com.github.cwdtom.gateway.environment.CorsEnvironment;
-import com.github.cwdtom.gateway.environment.FlowLimitsEnvironment;
-import com.github.cwdtom.gateway.environment.HttpEnvironment;
-import com.github.cwdtom.gateway.environment.MappingConfig;
+import com.github.cwdtom.gateway.environment.*;
 import com.github.cwdtom.gateway.limit.TokenPool;
 import com.github.cwdtom.gateway.mapping.Mapper;
 import com.github.cwdtom.gateway.util.HttpUtils;
@@ -16,6 +13,7 @@ import io.netty.channel.ChannelFutureListener;
 import io.netty.handler.codec.http.*;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.File;
 import java.io.IOException;
 
 /**
@@ -60,6 +58,16 @@ public class RequestHandler implements Runnable {
         try {
             // 反向代理地址不存在
             if (mapper == null) {
+                String path = StaticConfig.getPath(host);
+                if (path != null) {
+                    // 返回静态资源 防止跨目录访问
+                    path += request.uri().replace("/../", "");
+                    File file = new File(path);
+                    if (file.exists() && file.isFile()) {
+                        log.info("GET STATIC RESOURCE {}", file.getPath());
+                        response = ResponseUtils.buildResponse(file, request.protocolVersion());
+                    }
+                }
                 return;
             }
             // 判断是否需要重定向至https
@@ -87,16 +95,20 @@ public class RequestHandler implements Runnable {
         } catch (Exception e) {
             log.error("server error.", e);
             response = ResponseUtils.buildFailResponse(HttpResponseStatus.BAD_GATEWAY);
-            log.error("{} {} offline.", host, mapper.exception(request.method(), request.uri(),
-                    request.headers().get(HttpHeaderNames.CONTENT_TYPE)));
+            if (mapper == null) {
+                log.error("{} {} static resource is unable.", host, request.uri());
+            } else {
+                log.error("{} {} offline.", host, mapper.exception(request.method(), request.uri(),
+                        request.headers().get(HttpHeaderNames.CONTENT_TYPE)));
+            }
         } finally {
-            if (response != null && mapper != null) {
+            if (response != null) {
                 ChannelFuture cf = channel.writeAndFlush(response);
                 if (!HttpUtil.isKeepAlive(response)) {
                     cf.addListener(ChannelFutureListener.CLOSE);
                 }
             } else {
-                channel.writeAndFlush(ResponseUtils.buildFailResponse(HttpResponseStatus.SERVICE_UNAVAILABLE))
+                channel.writeAndFlush(ResponseUtils.buildFailResponse(HttpResponseStatus.NOT_FOUND))
                         .addListener(ChannelFutureListener.CLOSE);
             }
             // 检查请求体是否被释放

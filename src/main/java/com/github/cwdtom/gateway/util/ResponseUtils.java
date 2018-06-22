@@ -1,12 +1,16 @@
 package com.github.cwdtom.gateway.util;
 
 import com.github.cwdtom.gateway.constant.Constant;
+import eu.medsea.mimeutil.MimeUtil;
 import io.netty.buffer.Unpooled;
 import io.netty.handler.codec.http.*;
 import org.apache.commons.io.IOUtils;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URLConnection;
+import java.nio.file.Files;
+import java.util.Collection;
 
 /**
  * 响应工具
@@ -57,6 +61,22 @@ public class ResponseUtils {
                 HttpResponseStatus.valueOf(Integer.parseInt(strings[1])),
                 Unpooled.wrappedBuffer(bytes));
         response.headers().set(HttpHeaderNames.CONTENT_TYPE.toString(), connection.getContentType())
+                .set(HttpHeaderNames.CONTENT_LENGTH.toString(), response.content().readableBytes());
+        return response;
+    }
+
+    /**
+     * 构造响应
+     *
+     * @param file    文件
+     * @param version http版本
+     * @return 响应
+     */
+    public static FullHttpResponse buildResponse(File file, HttpVersion version) throws IOException {
+        FullHttpResponse response = new DefaultFullHttpResponse(version, HttpResponseStatus.OK,
+                Unpooled.wrappedBuffer(Files.readAllBytes(file.toPath())));
+        Collection<?> mimeTypes = MimeUtil.getMimeTypes(file);
+        response.headers().set(HttpHeaderNames.CONTENT_TYPE.toString(), mimeTypes)
                 .set(HttpHeaderNames.CONTENT_LENGTH.toString(), response.content().readableBytes());
         return response;
     }

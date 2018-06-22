@@ -7,6 +7,7 @@ import com.github.cwdtom.gateway.limit.TokenProvider;
 import com.github.cwdtom.gateway.listener.HttpListener;
 import com.github.cwdtom.gateway.listener.HttpsListener;
 import com.github.cwdtom.gateway.mapping.SurvivalCheck;
+import eu.medsea.mimeutil.MimeUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.cli.*;
 
@@ -46,6 +47,8 @@ public class Application {
             System.exit(1);
         }
 
+        // 加载mime资源
+        MimeUtil.registerMimeDetector("eu.medsea.mimeutil.detector.MagicMimeMimeDetector");
         // 启动http监听
         HttpListener http = new HttpListener();
         ThreadPool.execute(http);

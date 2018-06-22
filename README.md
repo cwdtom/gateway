@@ -1,6 +1,6 @@
 # Gateway
 
-![Version](https://img.shields.io/badge/version-1.6.0-green.svg)
+![Version](https://img.shields.io/badge/version-1.7.0-green.svg)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](http://opensource.org/licenses/MIT)
 
 ## Overview
@@ -13,6 +13,7 @@
 1. 负载均衡采用 RandomLoadBalance 随机负载均衡算法
 1. 支持熔断不可用服务，并在单独线程中进行重试，成功以后重新设置为可用
 1. 在linux下采用epoll其他系统采用nio
+1. 静态文件映射
 
 ## Usage
 
@@ -35,7 +36,7 @@
         "enable": false,
         "port": 8081,
         "keyPwd": "123456",
-        "keyPath": "/Users/chenweidong/workspace/gateway/ssl/cwd.keystore"
+        "keyPath": "/Users/xxx/workspace/gateway/ssl/cwd.keystore"
       },
       "threadPool": {
         "core": 150,
@@ -53,6 +54,9 @@
             "weight": 100
           }
         ]
+      },
+      "static": {
+        "localhost:8080": "/Users/xxx/workspace/gateway"
       },
       "cors": {
         "enable": true,
@@ -81,6 +85,9 @@
     1. mapping: 映射配置，每个host对应多个反向代理地址
         1. url: 反向代理地址
         1. weight: 权重
+    1. static: 静态文件映射
+        1. key host地址
+        1. value 本地映射文件夹
     1. cors: 跨域相关配置
         1. enable: 是否开启跨域
         1. whiteList: 跨域白名单，列表为空且开启跨域情况下为允许全部origin跨域请求
