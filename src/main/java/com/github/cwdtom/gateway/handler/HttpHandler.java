@@ -32,7 +32,9 @@ public class HttpHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-        log.error(ctx.channel().remoteAddress().toString(), cause);
+        if (!(cause instanceof RuntimeException)) {
+            log.error(ctx.channel().remoteAddress().toString(), cause);
+        }
         ctx.close();
     }
 }

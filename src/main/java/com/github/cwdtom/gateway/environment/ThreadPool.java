@@ -1,6 +1,7 @@
 package com.github.cwdtom.gateway.environment;
 
 import com.alibaba.fastjson.JSONObject;
+import com.github.cwdtom.gateway.exception.NotFoundException;
 import com.github.cwdtom.gateway.mapping.Mapper;
 
 import java.util.HashMap;
@@ -44,7 +45,11 @@ public class ThreadPool {
      * @param r    任务
      */
     public static void execute(String host, Runnable r) {
-        threadPoolMap.get(host).execute(r);
+        ThreadPoolExecutor executor = threadPoolMap.get(host);
+        if (executor == null) {
+            throw new NotFoundException();
+        }
+        executor.execute(r);
     }
 
     /**

@@ -43,4 +43,12 @@ public class Constant {
      * 熔断临界错误次数
      */
     public static final int OFFLINE_COUNT = 3;
+    /**
+     * linux标志
+     */
+    public static final String LINUX = "Linux";
+    /**
+     * 系统类型
+     */
+    public static final String OS_NAME = "os.name";
 }
