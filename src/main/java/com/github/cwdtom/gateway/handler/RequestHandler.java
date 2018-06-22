@@ -102,6 +102,7 @@ public class RequestHandler implements Runnable {
                         request.headers().get(HttpHeaderNames.CONTENT_TYPE)));
             }
         } finally {
+            this.release();
             if (response != null) {
                 ChannelFuture cf = channel.writeAndFlush(response);
                 if (!HttpUtil.isKeepAlive(response)) {
@@ -111,12 +112,15 @@ public class RequestHandler implements Runnable {
                 channel.writeAndFlush(ResponseUtils.buildFailResponse(HttpResponseStatus.NOT_FOUND))
                         .addListener(ChannelFutureListener.CLOSE);
             }
-            // 检查请求体是否被释放
-            int refCnt = request.content().refCnt();
-            if (refCnt != 0) {
-                request.content().release(refCnt);
-            }
         }
+    }
+
+    /**
+     * 释放资源
+     */
+    public void release() {
+        // 释放请求体
+        request.release();
     }
 
     /**
@@ -137,8 +141,6 @@ public class RequestHandler implements Runnable {
             ByteBuf byteBuf = request.content();
             byte[] bytes = new byte[(int) HttpUtil.getContentLength(request)];
             byteBuf.readBytes(bytes);
-            // 释放请求体
-            request.content().release();
             response = HttpUtils.sendPost(url, bytes, request.headers().get(HttpHeaderNames.CONTENT_TYPE));
         } else if (request.method().equals(HttpMethod.OPTIONS)) {
             // 处理options请求 支持cors
