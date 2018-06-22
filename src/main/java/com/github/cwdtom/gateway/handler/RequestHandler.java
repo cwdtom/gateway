@@ -61,7 +61,7 @@ public class RequestHandler implements Runnable {
                 String path = StaticConfig.getPath(host);
                 if (path != null) {
                     // 返回静态资源 防止跨目录访问
-                    path += request.uri().replace("/../", "");
+                    path += request.uri().replace("/../", "/");
                     File file = new File(path);
                     if (file.exists() && file.isFile()) {
                         log.info("GET STATIC RESOURCE {}", file.getPath());
