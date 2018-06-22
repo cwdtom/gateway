@@ -4,7 +4,7 @@
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](http://opensource.org/licenses/MIT)
 
 ## Overview
-- 基于netty的nio服务网关
+- 基于netty的服务网关
 1. 支持http协议
 1. 支持https协议
 1. 支持cors协议
@@ -12,6 +12,7 @@
 1. 相对独立的线程池
 1. 负载均衡采用 RandomLoadBalance 随机负载均衡算法
 1. 支持熔断不可用服务，并在单独线程中进行重试，成功以后重新设置为可用
+1. 在linux下采用epoll其他系统采用nio
 
 ## Usage
 
