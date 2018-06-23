@@ -15,6 +15,7 @@ import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpRequestDecoder;
 import io.netty.handler.codec.http.HttpResponseEncoder;
 import io.netty.handler.ssl.SslHandler;
+import io.netty.handler.timeout.IdleStateHandler;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.net.ssl.KeyManagerFactory;
@@ -94,6 +95,7 @@ public class HttpsListener implements Runnable {
                 p.addLast(new SslHandler(sslEngine));
                 p.addLast(new HttpResponseEncoder());
                 p.addLast(new HttpRequestDecoder());
+                p.addLast(new IdleStateHandler(0, 0, 20));
                 p.addLast(new HttpContentCompressor());
                 p.addLast(new HttpObjectAggregator(Constant.MAX_CONTENT_LEN));
                 p.addLast(new HttpHandler(true));

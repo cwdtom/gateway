@@ -37,4 +37,10 @@ public class HttpHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
         }
         ctx.close();
     }
+
+    @Override
+    public void userEventTriggered(ChannelHandlerContext ctx, Object evt) {
+        // 超时关闭
+        ctx.close();
+    }
 }

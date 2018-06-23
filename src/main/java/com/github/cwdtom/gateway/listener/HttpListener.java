@@ -14,6 +14,7 @@ import io.netty.handler.codec.http.HttpContentCompressor;
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpRequestDecoder;
 import io.netty.handler.codec.http.HttpResponseEncoder;
+import io.netty.handler.timeout.IdleStateHandler;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -76,6 +77,7 @@ public class HttpListener implements Runnable {
                 ChannelPipeline p = socketChannel.pipeline();
                 p.addLast(new HttpResponseEncoder());
                 p.addLast(new HttpRequestDecoder());
+                p.addLast(new IdleStateHandler(0, 0, 20));
                 p.addLast(new HttpContentCompressor());
                 p.addLast(new HttpObjectAggregator(Constant.MAX_CONTENT_LEN));
                 p.addLast(new HttpHandler(false));
