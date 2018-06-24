@@ -6,7 +6,6 @@ import com.github.cwdtom.gateway.limit.TokenPool;
 import com.github.cwdtom.gateway.mapping.Mapper;
 import com.github.cwdtom.gateway.util.HttpUtils;
 import com.github.cwdtom.gateway.util.ResponseUtils;
-import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
@@ -44,18 +43,24 @@ public class RequestHandler implements Runnable {
      * 是否是https请求
      */
     private boolean isHttps;
+    /**
+     * 请求体
+     */
+    private byte[] content;
 
-    public RequestHandler(Channel channel, FullHttpRequest request, String host, boolean isHttps) {
+    public RequestHandler(Channel channel, FullHttpRequest request, String host, boolean isHttps, byte[] content) {
         this.channel = channel;
         this.request = request;
         this.host = host;
         this.isHttps = isHttps;
+        this.content = content;
     }
 
     @Override
     public void run() {
-        Mapper mapper = MappingConfig.getMappingIsostatic(host);
+        Mapper mapper = null;
         try {
+            mapper = MappingConfig.getMappingIsostatic(host);
             // 反向代理地址不存在
             if (mapper == null) {
                 String path = StaticConfig.getPath(host);
@@ -102,7 +107,6 @@ public class RequestHandler implements Runnable {
                         request.headers().get(HttpHeaderNames.CONTENT_TYPE)));
             }
         } finally {
-            this.release();
             if (response != null) {
                 ChannelFuture cf = channel.writeAndFlush(response);
                 if (!HttpUtil.isKeepAlive(response)) {
@@ -112,15 +116,24 @@ public class RequestHandler implements Runnable {
                 channel.writeAndFlush(ResponseUtils.buildFailResponse(HttpResponseStatus.NOT_FOUND))
                         .addListener(ChannelFutureListener.CLOSE);
             }
+            release(false);
         }
     }
 
     /**
-     * 释放资源
+     * 手动帮助释放资源
+     *
+     * @param isClose 释放关闭信道
      */
-    public void release() {
-        // 释放请求体
-        request.release();
+    public void release(boolean isClose) {
+        if (isClose) {
+            channel.writeAndFlush(ResponseUtils.buildFailResponse(HttpResponseStatus.SERVICE_UNAVAILABLE))
+                    .addListener(ChannelFutureListener.CLOSE);
+        }
+        channel = null;
+        request = null;
+        response = null;
+        content = null;
     }
 
     /**
@@ -138,10 +151,7 @@ public class RequestHandler implements Runnable {
         } else if (request.method().equals(HttpMethod.POST) && mapping != null) {
             // 处理post请求
             log.info("POST {}", url);
-            ByteBuf byteBuf = request.content();
-            byte[] bytes = new byte[(int) HttpUtil.getContentLength(request)];
-            byteBuf.readBytes(bytes);
-            response = HttpUtils.sendPost(url, bytes, request.headers().get(HttpHeaderNames.CONTENT_TYPE));
+            response = HttpUtils.sendPost(url, content, request.headers().get(HttpHeaderNames.CONTENT_TYPE));
         } else if (request.method().equals(HttpMethod.OPTIONS)) {
             // 处理options请求 支持cors
             String origin = request.headers().get(HttpHeaderNames.ORIGIN);

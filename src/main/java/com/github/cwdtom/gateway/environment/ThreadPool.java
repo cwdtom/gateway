@@ -1,17 +1,14 @@
 package com.github.cwdtom.gateway.environment;
 
 import com.alibaba.fastjson.JSONObject;
-import com.github.cwdtom.gateway.exception.NotFoundException;
 import com.github.cwdtom.gateway.handler.RequestHandler;
 import com.github.cwdtom.gateway.mapping.Mapper;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -20,6 +17,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @author chenweidong
  * @since 1.0.0
  */
+@Slf4j
 public class ThreadPool {
     /**
      * 服务线程池
@@ -48,8 +46,9 @@ public class ThreadPool {
     public static void execute(String host, RequestHandler r) {
         ThreadPoolExecutor executor = threadPoolMap.get(host);
         if (executor == null) {
-            r.release();
-            throw new NotFoundException();
+            r.release(true);
+            log.warn("{} is not found.", host);
+            return;
         }
         executor.execute(r);
     }
@@ -76,12 +75,14 @@ public class ThreadPool {
         threadPoolMap = new HashMap<>((mappingMap.size() + pathMap.size()) / 3 * 4);
         for (String key : mappingMap.keySet()) {
             threadPoolMap.put(key, new ThreadPoolExecutor(core, max, timeout, TimeUnit.MILLISECONDS,
-                    new ArrayBlockingQueue<>(core >> 1), new DefaultThreadFactory(key)));
+                    new ArrayBlockingQueue<>(core >> 1), new DefaultThreadFactory(key),
+                    new DefaultRejectedExecutionHandler()));
         }
         for (String key : pathMap.keySet()) {
             if (!threadPoolMap.containsKey(key)) {
             threadPoolMap.put(key, new ThreadPoolExecutor(core, max, timeout, TimeUnit.MILLISECONDS,
-                    new ArrayBlockingQueue<>(core >> 1), new DefaultThreadFactory(key)));
+                    new ArrayBlockingQueue<>(core >> 1), new DefaultThreadFactory(key),
+                    new DefaultRejectedExecutionHandler()));
             }
         }
     }
@@ -106,6 +107,20 @@ public class ThreadPool {
         @Override
         public Thread newThread(Runnable r) {
             return new Thread(r, "gateway-" + host + "-" + count.incrementAndGet());
+        }
+    }
+
+    /**
+     * 拒绝操作
+     */
+    private static class DefaultRejectedExecutionHandler implements RejectedExecutionHandler {
+
+        @Override
+        public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
+            if (r instanceof RequestHandler) {
+                ((RequestHandler) r).release(true);
+            }
+            log.warn("mission rejected.", executor);
         }
     }
 }

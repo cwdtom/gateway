@@ -20,6 +20,7 @@ public class TokenProvider implements Runnable {
     public void run() {
         FlowLimitsEnvironment env = FlowLimitsEnvironment.get();
         if (env.isEnable()) {
+            log.error("限流令牌开始生产！");
             try {
                 while (true) {
                     TokenPool.offer();

@@ -1,10 +1,15 @@
 package com.github.cwdtom.gateway.handler;
 
 import com.github.cwdtom.gateway.environment.ThreadPool;
+import com.github.cwdtom.gateway.util.ResponseUtils;
+import io.netty.buffer.ByteBuf;
+import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpHeaderNames;
+import io.netty.handler.codec.http.HttpResponseStatus;
+import io.netty.handler.codec.http.HttpUtil;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -25,17 +30,22 @@ public class HttpHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
     @Override
     protected void channelRead0(ChannelHandlerContext channelHandlerContext, FullHttpRequest request) {
         String host = request.headers().get(HttpHeaderNames.HOST);
-        // 保留请求体
-        request.content().retain();
-        ThreadPool.execute(host, new RequestHandler(channelHandlerContext.channel(), request, host, isHttps));
+        ByteBuf byteBuf = request.content();
+        int len = (int) HttpUtil.getContentLength(request);
+        byte[] bytes = null;
+        if (len > 0) {
+            bytes = new byte[len];
+            byteBuf.readBytes(bytes);
+            byteBuf.discardReadBytes();
+        }
+        ThreadPool.execute(host, new RequestHandler(channelHandlerContext.channel(), request, host, isHttps, bytes));
     }
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-        if (!(cause instanceof RuntimeException)) {
-            log.error(ctx.channel().remoteAddress().toString(), cause);
-        }
-        ctx.close();
+        log.error("server catch exception.", cause);
+        ctx.channel().writeAndFlush(ResponseUtils.buildFailResponse(HttpResponseStatus.INTERNAL_SERVER_ERROR))
+                .addListener(ChannelFutureListener.CLOSE);
     }
 
     @Override
