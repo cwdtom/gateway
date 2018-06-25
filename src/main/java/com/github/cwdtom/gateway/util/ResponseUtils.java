@@ -64,7 +64,7 @@ public class ResponseUtils {
                     Unpooled.wrappedBuffer(responseBody.bytes()));
         }
         for (String name : resp.headers().names()) {
-            response.headers().set(name, resp.headers().get(name));
+            response.headers().set(name, resp.headers(name));
         }
         return response;
     }
