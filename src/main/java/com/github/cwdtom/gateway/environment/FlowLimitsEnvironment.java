@@ -1,7 +1,8 @@
 package com.github.cwdtom.gateway.environment;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.github.cwdtom.gateway.limit.TokenPool;
+import com.github.cwdtom.gateway.limit.TokenBucket;
 
 /**
  * 限流环境
@@ -11,10 +12,6 @@ import com.github.cwdtom.gateway.limit.TokenPool;
  */
 public class FlowLimitsEnvironment {
     /**
-     * 单例
-     */
-    private static FlowLimitsEnvironment instance;
-    /**
      * 是否启用
      */
     private boolean enable;
@@ -23,23 +20,19 @@ public class FlowLimitsEnvironment {
      */
     private long rate;
     /**
-     * 令牌池最大大小
+     * 令牌桶
      */
-    private int maxSize;
+    private TokenBucket tokenBucket;
 
-    static {
-        FlowLimitsEnvironment env = new FlowLimitsEnvironment();
-        JSONObject obj = ConfigEnvironment.getChild("flowLimits");
-        env.enable = obj.getBoolean("enable");
-        env.rate = obj.getLong("rate");
-        env.maxSize = obj.getInteger("maxSize");
-        instance = env;
-        // 初始化令牌池
-        TokenPool.initializeTokenPool(env);
-    }
-
-    public static FlowLimitsEnvironment get() {
-        return instance;
+    FlowLimitsEnvironment(ConfigEnvironment config) {
+        JSONObject obj = JSON.parseObject(config.getChild("flowLimits"));
+        if (obj == null) {
+            enable = false;
+        } else {
+            enable = obj.getBoolean("enable");
+            rate = obj.getLong("rate");
+            tokenBucket = new TokenBucket(obj.getInteger("maxSize"));
+        }
     }
 
     public boolean isEnable() {
@@ -50,7 +43,7 @@ public class FlowLimitsEnvironment {
         return rate;
     }
 
-    public int getMaxSize() {
-        return maxSize;
+    public TokenBucket getTokenBucket() {
+        return tokenBucket;
     }
 }

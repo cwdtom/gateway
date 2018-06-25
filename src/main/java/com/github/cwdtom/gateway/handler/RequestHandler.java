@@ -2,7 +2,6 @@ package com.github.cwdtom.gateway.handler;
 
 import com.github.cwdtom.gateway.constant.Constant;
 import com.github.cwdtom.gateway.environment.*;
-import com.github.cwdtom.gateway.limit.TokenPool;
 import com.github.cwdtom.gateway.mapping.Mapper;
 import com.github.cwdtom.gateway.util.HttpUtils;
 import com.github.cwdtom.gateway.util.ResponseUtils;
@@ -23,6 +22,10 @@ import java.io.IOException;
  */
 @Slf4j
 public class RequestHandler implements Runnable {
+    /**
+     * 应用上下文
+     */
+    private final ApplicationContext applicationContext;
     /**
      * 信道
      */
@@ -48,12 +51,14 @@ public class RequestHandler implements Runnable {
      */
     private byte[] content;
 
-    public RequestHandler(Channel channel, FullHttpRequest request, String host, boolean isHttps, byte[] content) {
+    public RequestHandler(Channel channel, FullHttpRequest request, String host,
+                          boolean isHttps, byte[] content, ApplicationContext applicationContext) {
         this.channel = channel;
         this.request = request;
         this.host = host;
         this.isHttps = isHttps;
         this.content = content;
+        this.applicationContext = applicationContext;
     }
 
     @Override
@@ -61,15 +66,16 @@ public class RequestHandler implements Runnable {
         Mapper mapper = null;
         try {
             // 判断是否需要限流
-            if (FlowLimitsEnvironment.get().isEnable() && !TokenPool.take()) {
+            FlowLimitsEnvironment fle = applicationContext.getContext(FlowLimitsEnvironment.class);
+            if (fle.isEnable() && !fle.getTokenBucket().take()) {
                 log.info("FLOW LIMIT {} {}.", host, request.uri());
                 response = ResponseUtils.buildFailResponse(HttpResponseStatus.REQUEST_TIMEOUT);
                 return;
             }
-            mapper = MappingConfig.getMappingIsostatic(host);
+            mapper = applicationContext.getContext(MappingEnvironment.class).getRandomLoadBalance(host);
             // 反向代理地址不存在
             if (mapper == null) {
-                String path = StaticConfig.getPath(host);
+                String path = applicationContext.getContext(StaticEnvironment.class).getPath(host);
                 if (path != null) {
                     // 返回静态资源 防止跨目录访问
                     path += request.uri().replace("/../", "/");
@@ -82,7 +88,7 @@ public class RequestHandler implements Runnable {
                 return;
             }
             // 判断是否需要重定向至https
-            if (isHttps && HttpEnvironment.get().isRedirectHttps()) {
+            if (isHttps && applicationContext.getContext(HttpEnvironment.class).isRedirectHttps()) {
                 response = ResponseUtils.buildRedirectResponse(host);
                 return;
             }
@@ -156,7 +162,7 @@ public class RequestHandler implements Runnable {
         } else if (request.method().equals(HttpMethod.OPTIONS)) {
             // 处理options请求 支持cors
             String origin = request.headers().get(HttpHeaderNames.ORIGIN);
-            if (CorsEnvironment.isLegal(origin)) {
+            if (applicationContext.getContext(CorsEnvironment.class).isLegal(origin)) {
                 response = ResponseUtils.buildOptionsResponse();
             } else {
                 response = ResponseUtils.buildFailResponse(HttpResponseStatus.NOT_ACCEPTABLE);

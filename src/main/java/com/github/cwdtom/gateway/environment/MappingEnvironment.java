@@ -1,5 +1,6 @@
 package com.github.cwdtom.gateway.environment;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.github.cwdtom.gateway.mapping.Mapper;
@@ -13,18 +14,18 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author chenweidong
  * @since 1.0.0
  */
-public class MappingConfig {
+public class MappingEnvironment {
     /**
      * 映射表
      */
-    private static Map<String, List<Mapper>> urlMapping;
+    private Map<String, List<Mapper>> urlMapping;
     /**
      * 随机数对象
      */
-    private static Random random = new Random();
+    private Random random = new Random();
 
-    static {
-        JSONObject obj = ConfigEnvironment.getChild("mapping");
+    MappingEnvironment(ConfigEnvironment config) {
+        JSONObject obj = JSON.parseObject(config.getChild("mapping"));
         Map<String, List<Mapper>> map = new ConcurrentHashMap<>(obj.size() / 3 * 4);
         for (Map.Entry<String, Object> entry : obj.entrySet()) {
             JSONArray arr = (JSONArray) entry.getValue();
@@ -44,7 +45,7 @@ public class MappingConfig {
      *
      * @return mapping
      */
-    public static Map<String, List<Mapper>> get() {
+    public Map<String, List<Mapper>> get() {
         return urlMapping;
     }
 
@@ -55,7 +56,7 @@ public class MappingConfig {
      * @param host 原地址
      * @return 映射地址
      */
-    public static Mapper getMappingIsostatic(String host) {
+    public Mapper getRandomLoadBalance(String host) {
         List<Mapper> urls = urlMapping.get(host);
         if (urls == null || urls.size() == 0) {
             return null;

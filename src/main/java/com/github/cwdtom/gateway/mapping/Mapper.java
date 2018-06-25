@@ -17,11 +17,12 @@ public class Mapper {
     /**
      * 异常次数
      */
-    int exceptionCount;
+    private int exceptionCount;
+
     /**
      * 目标url
      */
-    String target;
+    private String target;
 
     public Mapper(String target, Integer weight) {
         this.target = target;
@@ -36,6 +37,10 @@ public class Mapper {
 
     public int getWeight() {
         return weight;
+    }
+
+    public void setExceptionCount(int exceptionCount) {
+        this.exceptionCount = exceptionCount;
     }
 
     /**

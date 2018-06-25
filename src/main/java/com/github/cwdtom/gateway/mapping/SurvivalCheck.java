@@ -33,7 +33,9 @@ public class SurvivalCheck implements Runnable {
      * @param mapper mapper
      */
     public static void add(OfflineMapper mapper) {
-        mappers.add(mapper);
+        if (!mappers.contains(mapper)) {
+            mappers.add(mapper);
+        }
     }
 
     @Override
@@ -44,14 +46,14 @@ public class SurvivalCheck implements Runnable {
                 while (iterator.hasNext()) {
                     OfflineMapper o = iterator.next();
                     try {
-                        String url = Constant.HTTP_PREFIX + o.getMapper().target + o.getUri();
+                        String url = Constant.HTTP_PREFIX + o.getMapper().getTarget() + o.getUri();
                         if (o.getMethod().equals(HttpMethod.GET)) {
                             HttpUtils.sendGet(url);
                         } else if (o.getMethod().equals(HttpMethod.POST)) {
                             HttpUtils.sendPost(url, new byte[0], o.getContentType());
                         }
                         // 服务恢复
-                        o.getMapper().exceptionCount = 0;
+                        o.getMapper().setExceptionCount(0);
                         iterator.remove();
                     } catch (IOException ignored) {
                     }

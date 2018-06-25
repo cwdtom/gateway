@@ -10,10 +10,6 @@ import com.alibaba.fastjson.JSONObject;
  */
 public class HttpEnvironment {
     /**
-     * 单例
-     */
-    private static HttpEnvironment instance;
-    /**
      * 端口号
      */
     private int port;
@@ -22,21 +18,10 @@ public class HttpEnvironment {
      */
     private boolean redirectHttps;
 
-    /**
-     * 获取环境对象
-     *
-     * @return 环境对象
-     */
-    public static HttpEnvironment get() {
-        return instance;
-    }
-
-    static {
-        HttpEnvironment env = new HttpEnvironment();
-        JSONObject obj = ConfigEnvironment.getChild("http");
-        env.port = obj.getInteger("port");
-        env.redirectHttps = obj.getBoolean("redirectHttps");
-        HttpEnvironment.instance = env;
+    HttpEnvironment(ConfigEnvironment config) {
+        JSONObject obj = JSONObject.parseObject(config.getChild("http"));
+        port = obj.getInteger("port");
+        redirectHttps = obj.getBoolean("redirectHttps");
     }
 
     public int getPort() {

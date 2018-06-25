@@ -1,6 +1,7 @@
 package com.github.cwdtom.gateway.handler;
 
-import com.github.cwdtom.gateway.environment.ThreadPool;
+import com.github.cwdtom.gateway.environment.ApplicationContext;
+import com.github.cwdtom.gateway.thread.ThreadPoolGroup;
 import com.github.cwdtom.gateway.util.ResponseUtils;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelFutureListener;
@@ -10,7 +11,6 @@ import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.HttpUtil;
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -20,12 +20,20 @@ import lombok.extern.slf4j.Slf4j;
  * @since 1.0.0
  */
 @Slf4j
-@AllArgsConstructor
 public class HttpHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
     /**
      * 是否是https请求
      */
     private boolean isHttps;
+    /**
+     * 应用上下文
+     */
+    private final ApplicationContext applicationContext;
+
+    public HttpHandler(ApplicationContext applicationContext, boolean isHttps) {
+        this.isHttps = isHttps;
+        this.applicationContext = applicationContext;
+    }
 
     @Override
     protected void channelRead0(ChannelHandlerContext channelHandlerContext, FullHttpRequest request) {
@@ -38,7 +46,8 @@ public class HttpHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
             byteBuf.readBytes(bytes);
             byteBuf.discardReadBytes();
         }
-        ThreadPool.execute(host, new RequestHandler(channelHandlerContext.channel(), request, host, isHttps, bytes));
+        applicationContext.getContext(ThreadPoolGroup.class).execute(host,
+                new RequestHandler(channelHandlerContext.channel(), request, host, isHttps, bytes, applicationContext));
     }
 
     @Override

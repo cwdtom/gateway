@@ -10,10 +10,6 @@ import com.alibaba.fastjson.JSONObject;
  */
 public class HttpsEnvironment {
     /**
-     * 单例
-     */
-    private static HttpsEnvironment instance;
-    /**
      * 是否开启
      */
     private boolean enable;
@@ -30,27 +26,16 @@ public class HttpsEnvironment {
      */
     private String keyPath;
 
-    /**
-     * 获取https环境对象
-     *
-     * @return https环境对象
-     */
-    public static HttpsEnvironment get() {
-        return instance;
-    }
-
-    static {
-        JSONObject obj = ConfigEnvironment.getChild("https");
-        HttpsEnvironment env = new HttpsEnvironment();
+    HttpsEnvironment(ConfigEnvironment config) {
+        JSONObject obj = JSONObject.parseObject(config.getChild("https"));
         if (obj == null) {
-            env.enable = false;
+            enable = false;
         } else {
-            env.enable = obj.getBoolean("enable");
-            env.port = obj.getInteger("port");
-            env.keyPwd = obj.getString("keyPwd");
-            env.keyPath = obj.getString("keyPath");
+            enable = obj.getBoolean("enable");
+            port = obj.getInteger("port");
+            keyPwd = obj.getString("keyPwd");
+            keyPath = obj.getString("keyPath");
         }
-        HttpsEnvironment.instance = env;
     }
 
     public int getPort() {

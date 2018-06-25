@@ -3,9 +3,8 @@ package com.github.cwdtom.gateway.environment;
 import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 配置环境
@@ -18,29 +17,28 @@ public class ConfigEnvironment {
     /**
      * 配置json对象
      */
-    private static JSONObject object;
+    private Map<String, String> config;
 
     /**
      * 获取配置json
      *
-     * @return 配置json
+     * @return json string
      */
-    public static JSONObject getChild(String key) {
-        return object.getJSONObject(key);
+    public String getChild(String key) {
+        return config.get(key);
     }
 
     /**
-     * 初始化配置环境
+     * 创建配置文件环境
      *
-     * @param filePath 配置文件路径
+     * @param json json string
      */
-    public static void init(String filePath) {
-        try {
-            String content = new String(Files.readAllBytes(Paths.get(filePath)));
-            object = JSONObject.parseObject(content);
-        } catch (IOException e) {
-            log.error("config file is not found.");
-            System.exit(1);
+    ConfigEnvironment(String json) {
+        JSONObject obj = JSONObject.parseObject(json);
+        Map<String, String> map = new HashMap<>(obj.size() / 3 * 4);
+        for (Map.Entry<String, Object> entry : obj.entrySet()) {
+            map.put(entry.getKey(), entry.getValue().toString());
         }
+        config = map;
     }
 }

@@ -1,6 +1,7 @@
 package com.github.cwdtom.gateway.listener;
 
 import com.github.cwdtom.gateway.constant.Constant;
+import com.github.cwdtom.gateway.environment.ApplicationContext;
 import com.github.cwdtom.gateway.environment.HttpEnvironment;
 import com.github.cwdtom.gateway.handler.HttpHandler;
 import io.netty.bootstrap.ServerBootstrap;
@@ -26,6 +27,10 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class HttpListener implements Runnable {
     /**
+     * 应用上下文
+     */
+    private final ApplicationContext applicationContext;
+    /**
      * boss线程池
      */
     private final EventLoopGroup boss;
@@ -38,7 +43,8 @@ public class HttpListener implements Runnable {
      */
     private final Class<? extends ServerChannel> channelClass;
 
-    public HttpListener() {
+    public HttpListener(ApplicationContext applicationContext) {
+        this.applicationContext = applicationContext;
         if (Constant.LINUX.equals(System.getProperty(Constant.OS_NAME))) {
             boss = new EpollEventLoopGroup();
             worker = new EpollEventLoopGroup();
@@ -64,8 +70,7 @@ public class HttpListener implements Runnable {
      * 开始监听 阻塞
      */
     private void listen() {
-        HttpEnvironment env = HttpEnvironment.get();
-
+        HttpEnvironment env = applicationContext.getContext(HttpEnvironment.class);
         ServerBootstrap bootstrap = new ServerBootstrap();
         bootstrap.group(boss, worker);
         bootstrap.channel(channelClass);
@@ -80,7 +85,7 @@ public class HttpListener implements Runnable {
                 p.addLast(new IdleStateHandler(0, 0, 20));
                 p.addLast(new HttpContentCompressor());
                 p.addLast(new HttpObjectAggregator(Constant.MAX_CONTENT_LEN));
-                p.addLast(new HttpHandler(false));
+                p.addLast(new HttpHandler(applicationContext, false));
             }
         });
         try {

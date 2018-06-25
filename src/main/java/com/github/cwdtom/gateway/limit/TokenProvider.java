@@ -1,5 +1,6 @@
 package com.github.cwdtom.gateway.limit;
 
+import com.github.cwdtom.gateway.environment.ApplicationContext;
 import com.github.cwdtom.gateway.environment.FlowLimitsEnvironment;
 import lombok.extern.slf4j.Slf4j;
 
@@ -12,18 +13,26 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class TokenProvider implements Runnable {
     /**
+     * 应用上下文
+     */
+    private final ApplicationContext applicationContext;
+    /**
      * 是否中断
      */
     private boolean interrupted = false;
 
+    public TokenProvider(ApplicationContext applicationContext) {
+        this.applicationContext = applicationContext;
+    }
+
     @Override
     public void run() {
-        FlowLimitsEnvironment env = FlowLimitsEnvironment.get();
+        FlowLimitsEnvironment env = applicationContext.getContext(FlowLimitsEnvironment.class);
         if (env.isEnable()) {
             log.error("token start production.");
             try {
                 while (true) {
-                    TokenPool.offer();
+                    env.getTokenBucket().offer();
                     Thread.sleep(env.getRate());
                     if (interrupted) {
                         return;
