@@ -34,8 +34,7 @@
     "whiteList": []
   },
   "flowLimits": {
-    "enable": false,
-    "timeout": 500,
+    "enable": true,
     "rate": 5,
     "maxSize": 200
   }

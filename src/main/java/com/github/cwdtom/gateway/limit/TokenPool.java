@@ -2,9 +2,7 @@ package com.github.cwdtom.gateway.limit;
 
 import com.github.cwdtom.gateway.environment.FlowLimitsEnvironment;
 
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * 令牌池
@@ -22,13 +20,13 @@ public class TokenPool {
      */
     private static boolean isInit = false;
     /**
-     * 令牌队列
+     * 令牌数量
      */
-    private BlockingQueue<Integer> pool;
+    private AtomicInteger count;
     /**
-     * 等待超时时间
+     * 令牌桶大小
      */
-    private long timeout;
+    private int maxSize;
 
     /**
      * 初始化
@@ -38,8 +36,8 @@ public class TokenPool {
     public static synchronized void initializeTokenPool(FlowLimitsEnvironment env) {
         if (!isInit) {
             TokenPool tokenPool = new TokenPool();
-            tokenPool.pool = new ArrayBlockingQueue<>(env.getMaxSize());
-            tokenPool.timeout = env.getTimeout();
+            tokenPool.count = new AtomicInteger(0);
+            tokenPool.maxSize = env.getMaxSize();
             instance = tokenPool;
             isInit = true;
         }
@@ -49,7 +47,9 @@ public class TokenPool {
      * 放入令牌
      */
     public static void offer() {
-        instance.pool.offer(1);
+        if (instance.count.get() < instance.maxSize) {
+            instance.count.incrementAndGet();
+        }
     }
 
     /**
@@ -58,10 +58,10 @@ public class TokenPool {
      * @return 是否获取成功
      */
     public static boolean take() {
-        try {
-            Integer token = instance.pool.poll(instance.timeout, TimeUnit.MILLISECONDS);
-            return token != null;
-        } catch (InterruptedException e) {
+        if (instance.count.getAndDecrement() >= 0) {
+            return true;
+        } else {
+            instance.count.getAndIncrement();
             return false;
         }
     }

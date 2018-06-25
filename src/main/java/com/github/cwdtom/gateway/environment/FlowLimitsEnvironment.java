@@ -19,10 +19,6 @@ public class FlowLimitsEnvironment {
      */
     private boolean enable;
     /**
-     * 超时时间ms
-     */
-    private long timeout;
-    /**
      * 令牌产生速率ms
      */
     private long rate;
@@ -35,7 +31,6 @@ public class FlowLimitsEnvironment {
         FlowLimitsEnvironment env = new FlowLimitsEnvironment();
         JSONObject obj = ConfigEnvironment.getChild("flowLimits");
         env.enable = obj.getBoolean("enable");
-        env.timeout = obj.getLong("timeout");
         env.rate = obj.getLong("rate");
         env.maxSize = obj.getInteger("maxSize");
         instance = env;
@@ -49,10 +44,6 @@ public class FlowLimitsEnvironment {
 
     public boolean isEnable() {
         return enable;
-    }
-
-    public long getTimeout() {
-        return timeout;
     }
 
     public long getRate() {

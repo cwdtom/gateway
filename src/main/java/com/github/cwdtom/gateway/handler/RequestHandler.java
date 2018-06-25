@@ -60,6 +60,12 @@ public class RequestHandler implements Runnable {
     public void run() {
         Mapper mapper = null;
         try {
+            // 判断是否需要限流
+            if (FlowLimitsEnvironment.get().isEnable() && !TokenPool.take()) {
+                log.info("FLOW LIMIT {} {}.", host, request.uri());
+                response = ResponseUtils.buildFailResponse(HttpResponseStatus.REQUEST_TIMEOUT);
+                return;
+            }
             mapper = MappingConfig.getMappingIsostatic(host);
             // 反向代理地址不存在
             if (mapper == null) {
@@ -78,11 +84,6 @@ public class RequestHandler implements Runnable {
             // 判断是否需要重定向至https
             if (isHttps && HttpEnvironment.get().isRedirectHttps()) {
                 response = ResponseUtils.buildRedirectResponse(host);
-                return;
-            }
-            // 判断是否需要限流
-            if (FlowLimitsEnvironment.get().isEnable() && !TokenPool.take()) {
-                response = ResponseUtils.buildFailResponse(HttpResponseStatus.REQUEST_TIMEOUT);
                 return;
             }
             // 判断解析是否成功
