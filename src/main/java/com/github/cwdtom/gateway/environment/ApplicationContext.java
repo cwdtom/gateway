@@ -1,6 +1,7 @@
 package com.github.cwdtom.gateway.environment;
 
 import com.github.cwdtom.gateway.thread.ThreadPoolGroup;
+import io.netty.util.ResourceLeakDetector;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
@@ -23,6 +24,8 @@ public final class ApplicationContext {
     private final static Map<Class, Object> CONTEXT = new ConcurrentHashMap<>();
 
     public ApplicationContext(String filePath) {
+        // 关闭内存泄漏检测
+        ResourceLeakDetector.setLevel(ResourceLeakDetector.Level.DISABLED);
         ConfigEnvironment config = null;
         try {
             String json = new String(Files.readAllBytes(Paths.get(filePath)));
