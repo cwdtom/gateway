@@ -1,10 +1,10 @@
 # Gateway
 
-![Version](https://img.shields.io/badge/version-1.7.2-green.svg)
+![Version](https://img.shields.io/badge/version-2.0.0-green.svg)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](http://opensource.org/licenses/MIT)
 
 ## Overview
-- 基于netty的服务网关
+- 基于netty和okHttp的反向代理网关
 1. 支持http协议
 1. 支持https协议
 1. 支持cors协议

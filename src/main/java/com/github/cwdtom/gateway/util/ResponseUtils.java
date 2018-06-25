@@ -4,11 +4,11 @@ import com.github.cwdtom.gateway.constant.Constant;
 import eu.medsea.mimeutil.MimeUtil;
 import io.netty.buffer.Unpooled;
 import io.netty.handler.codec.http.*;
-import org.apache.commons.io.IOUtils;
+import okhttp3.Response;
+import okhttp3.ResponseBody;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URLConnection;
 import java.nio.file.Files;
 import java.util.Collection;
 
@@ -49,19 +49,23 @@ public class ResponseUtils {
     /**
      * 构造响应
      *
-     * @param connection 连接
+     * @param resp 响应内容
      * @return 响应
      */
-    public static FullHttpResponse buildResponse(URLConnection connection) throws IOException {
-        // 请求代理地址
-        byte[] bytes = IOUtils.toByteArray(connection.getInputStream());
-        // 获取http标识
-        String[] strings = connection.getHeaderField(0).split(" ");
-        FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.valueOf(strings[0]),
-                HttpResponseStatus.valueOf(Integer.parseInt(strings[1])),
-                Unpooled.wrappedBuffer(bytes));
-        response.headers().set(HttpHeaderNames.CONTENT_TYPE.toString(), connection.getContentType())
-                .set(HttpHeaderNames.CONTENT_LENGTH.toString(), response.content().readableBytes());
+    public static FullHttpResponse buildResponse(Response resp) throws IOException {
+        FullHttpResponse response;
+        ResponseBody responseBody  = resp.body();
+        if (responseBody == null) {
+            response = new DefaultFullHttpResponse(HttpVersion.valueOf(resp.protocol().toString()),
+                    HttpResponseStatus.valueOf(resp.code()));
+        } else {
+            response = new DefaultFullHttpResponse(HttpVersion.valueOf(resp.protocol().toString()),
+                    HttpResponseStatus.valueOf(resp.code()),
+                    Unpooled.wrappedBuffer(responseBody.bytes()));
+        }
+        for (String name : resp.headers().names()) {
+            response.headers().set(name, resp.headers().get(name));
+        }
         return response;
     }
 

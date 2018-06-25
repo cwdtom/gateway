@@ -1,11 +1,9 @@
 package com.github.cwdtom.gateway.util;
 
 import io.netty.handler.codec.http.FullHttpResponse;
+import okhttp3.*;
 
 import java.io.IOException;
-import java.io.OutputStream;
-import java.net.URL;
-import java.net.URLConnection;
 
 /**
  * HTTP工具
@@ -15,16 +13,14 @@ import java.net.URLConnection;
  */
 public class HttpUtils {
     /**
-     * 设置常用请求头
-     *
-     * @param connection 连接实体
-     * @return 连接实体
+     * client
      */
-    private static URLConnection setDefaultHeaders(URLConnection connection) {
-        connection.setRequestProperty("accept", "*/*");
-        connection.setRequestProperty("connection", "Keep-Alive");
-        connection.setRequestProperty("user-agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1;SV1)");
-        return connection;
+    private static final OkHttpClient CLIENT;
+
+    static {
+        CLIENT = new OkHttpClient();
+        // 去除并发数限制
+        CLIENT.dispatcher().setMaxRequestsPerHost(Integer.MAX_VALUE);
     }
 
     /**
@@ -45,13 +41,16 @@ public class HttpUtils {
      * @return 响应结果
      */
     public static FullHttpResponse sendGet(String url) throws IOException {
-        URL realUrl = new URL(url);
-        // 打开URL连接
-        URLConnection connection = realUrl.openConnection();
-        connection = setDefaultHeaders(connection);
-        // 打开连接
-        connection.connect();
-        return ResponseUtils.buildResponse(connection);
+        Request request = new Request.Builder()
+                .header("accept", "*/*")
+                .header("connection", "Keep-Alive")
+                .header("user-agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1;SV1)")
+                .url(url).build();
+        Response response = CLIENT.newCall(request).execute();
+        if (!response.isSuccessful()) {
+            throw new IOException();
+        }
+        return ResponseUtils.buildResponse(response);
     }
 
     /**
@@ -62,17 +61,19 @@ public class HttpUtils {
      * @return 响应结果
      */
     public static FullHttpResponse sendPost(String url, byte[] param, String contentType) throws IOException {
-        URL realUrl = new URL(url);
-        // 打开URL连接
-        URLConnection conn = realUrl.openConnection();
-        conn = setDefaultHeaders(conn);
-        conn.setRequestProperty("Content-Type", contentType);
-        conn.setDoOutput(true);
-        conn.setDoInput(true);
-        try (OutputStream out = conn.getOutputStream()) {
-            out.write(param);
-            out.flush();
+        if (param == null || contentType == null) {
+            throw new IOException();
         }
-        return ResponseUtils.buildResponse(conn);
+        Request request = new Request.Builder()
+                .header("accept", "*/*")
+                .header("connection", "Keep-Alive")
+                .header("user-agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1;SV1)")
+                .post(RequestBody.create(MediaType.parse(contentType), param))
+                .url(url).build();
+        Response response = CLIENT.newCall(request).execute();
+        if (!response.isSuccessful()) {
+            throw new IOException();
+        }
+        return ResponseUtils.buildResponse(response);
     }
 }
