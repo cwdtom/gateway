@@ -11,6 +11,8 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 响应工具
@@ -63,8 +65,8 @@ public class ResponseUtils {
                     HttpResponseStatus.valueOf(resp.code()),
                     Unpooled.wrappedBuffer(responseBody.bytes()));
         }
-        for (String name : resp.headers().names()) {
-            response.headers().set(name, resp.headers(name));
+        for (Map.Entry<String, List<String>> entry : resp.headers().toMultimap().entrySet()) {
+            response.headers().set(entry.getKey(), entry.getValue());
         }
         return response;
     }
