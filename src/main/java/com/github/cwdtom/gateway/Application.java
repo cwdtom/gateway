@@ -13,6 +13,7 @@ import eu.medsea.mimeutil.MimeUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.cli.*;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -30,7 +31,8 @@ public class Application {
      *
      * @param args 参数
      */
-    public static void main(String[] args) throws ParseException {
+    public static void main(String[] args) throws ParseException, ClassNotFoundException, NoSuchMethodException,
+            InstantiationException, IllegalAccessException, InvocationTargetException {
         Options options = new Options();
         options.addOption(Constant.COMMAND_CONFIG, true, "config file path");
         options.addOption(Constant.COMMAND_HELP, false, "help info");

@@ -51,4 +51,12 @@ public class Constant {
      * 系统类型
      */
     public static final String OS_NAME = "os.name";
+    /**
+     * 节点最大数
+     */
+    public static final int MAX_NODE_SIZE = 150;
+    /**
+     * 中位数
+     */
+    public static final int MID_INT = Integer.MAX_VALUE / 2;
 }

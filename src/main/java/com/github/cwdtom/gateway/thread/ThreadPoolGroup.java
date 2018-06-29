@@ -37,7 +37,7 @@ public class ThreadPoolGroup {
         ThreadPoolExecutor executor = threadPoolMap.get(host);
         if (executor == null) {
             r.release(true);
-            log.warn("{} is not found.", host);
+            log.warn("{} IS NOT FOUND.", host);
             return;
         }
         executor.execute(r);

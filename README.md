@@ -1,6 +1,6 @@
 # Gateway
 
-![Version](https://img.shields.io/badge/version-2.0.0-green.svg)
+![Version](https://img.shields.io/badge/version-2.1.0-green.svg)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](http://opensource.org/licenses/MIT)
 
 ## Overview
@@ -10,7 +10,9 @@
 1. 支持cors协议
 1. 支持基于本地令牌桶的限流
 1. 相对独立的线程池
-1. 负载均衡采用 RandomLoadBalance 随机负载均衡算法
+1. 负载均衡采用 
+    1. RandomLoadBalance 随机负载均衡算法
+    1. ConsistentHash 一致性hash算法
 1. 支持熔断不可用服务，并在单独线程中进行重试，成功以后重新设置为可用
 1. 在linux下采用epoll其他系统采用nio
 1. 静态文件映射
@@ -44,16 +46,19 @@
         "timeout": 5000
       },
       "mapping": {
-        "localhost:8080": [
-          {
-            "url": "123.125.115.110:80",
-            "weight": 200
-          },
-          {
-            "url": "220.181.57.216:80",
-            "weight": 100
-          }
-        ]
+        "mode": "com.github.cwdtom.gateway.environment.impl.ConsistentHash",
+        "list": {
+          "127.0.0.1:8080": [
+            {
+              "url": "123.125.115.110:80",
+              "weight": 200
+            },
+            {
+              "url": "220.181.57.216:80",
+              "weight": 100
+            }
+          ]
+        }
       },
       "static": {
         "localhost:8080": "/Users/xxx/workspace/gateway"
@@ -83,8 +88,10 @@
         1. max: 最大线程数量
         1. timeout: 超时时间
     1. mapping: 映射配置，每个host对应多个反向代理地址
-        1. url: 反向代理地址
-        1. weight: 权重
+        1. mode: 负载均衡算法，默认为RandomLoadBalance
+        1. list: 映射表
+            1. url: 反向代理地址
+            1. weight: 权重
     1. static: 静态文件映射
         1. key host地址
         1. value 本地映射文件夹

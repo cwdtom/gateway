@@ -5,6 +5,7 @@ import io.netty.util.ResourceLeakDetector;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Map;
@@ -23,7 +24,8 @@ public final class ApplicationContext {
      */
     private final static Map<Class, Object> CONTEXT = new ConcurrentHashMap<>();
 
-    public ApplicationContext(String filePath) {
+    public ApplicationContext(String filePath) throws ClassNotFoundException, InvocationTargetException,
+            NoSuchMethodException, InstantiationException, IllegalAccessException {
         // 关闭内存泄漏检测
         ResourceLeakDetector.setLevel(ResourceLeakDetector.Level.DISABLED);
         ConfigEnvironment config = null;
@@ -39,7 +41,7 @@ public final class ApplicationContext {
         CONTEXT.put(FlowLimitsEnvironment.class, new FlowLimitsEnvironment(config));
         CONTEXT.put(HttpEnvironment.class, new HttpEnvironment(config));
         CONTEXT.put(HttpsEnvironment.class, new HttpsEnvironment(config));
-        MappingEnvironment mappingEnv = new MappingEnvironment(config);
+        MappingEnvironment mappingEnv = MappingEnvironment.buildMappingEnvironment(config);
         CONTEXT.put(MappingEnvironment.class, mappingEnv);
         StaticEnvironment staticEnv = new StaticEnvironment(config);
         CONTEXT.put(StaticEnvironment.class, staticEnv);

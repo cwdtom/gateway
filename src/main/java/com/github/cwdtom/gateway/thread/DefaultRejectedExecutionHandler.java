@@ -19,6 +19,6 @@ public class DefaultRejectedExecutionHandler implements RejectedExecutionHandler
         if (r instanceof RequestHandler) {
             ((RequestHandler) r).release(true);
         }
-        log.warn("mission rejected.", executor);
+        log.warn("MISSION REJECTED.", executor);
     }
 }

@@ -64,7 +64,7 @@ public class SurvivalCheck implements Runnable {
                 Thread.sleep(10000);
             }
         } catch (InterruptedException e) {
-            log.error("存活检查服务异常！", e);
+            log.error("survival check service exception.", e);
             run();
         }
     }

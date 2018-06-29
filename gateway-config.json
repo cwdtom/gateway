@@ -15,16 +15,19 @@
     "timeout": 5000
   },
   "mapping": {
-    "127.0.0.1:8080": [
-      {
-        "url": "123.125.115.110:80",
-        "weight": 200
-      },
-      {
-        "url": "220.181.57.216:80",
-        "weight": 100
-      }
-    ]
+    "mode": "com.github.cwdtom.gateway.environment.impl.ConsistentHash",
+    "list": {
+      "127.0.0.1:8080": [
+        {
+          "url": "123.125.115.110:80",
+          "weight": 200
+        },
+        {
+          "url": "220.181.57.216:80",
+          "weight": 100
+        }
+      ]
+    }
   },
   "static": {
     "localhost:8080": "/Users/chenweidong/workspace/gateway"

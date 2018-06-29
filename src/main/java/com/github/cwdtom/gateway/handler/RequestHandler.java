@@ -72,7 +72,8 @@ public class RequestHandler implements Runnable {
                 response = ResponseUtils.buildFailResponse(HttpResponseStatus.REQUEST_TIMEOUT);
                 return;
             }
-            mapper = applicationContext.getContext(MappingEnvironment.class).getRandomLoadBalance(host);
+            String ip = channel.remoteAddress().toString().split(":")[0];
+            mapper = applicationContext.getContext(MappingEnvironment.class).getLoadBalance(host, ip);
             // 反向代理地址不存在
             if (mapper == null) {
                 String path = applicationContext.getContext(StaticEnvironment.class).getPath(host);

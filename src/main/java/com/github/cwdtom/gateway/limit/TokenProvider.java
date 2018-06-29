@@ -29,7 +29,7 @@ public class TokenProvider implements Runnable {
     public void run() {
         FlowLimitsEnvironment env = applicationContext.getContext(FlowLimitsEnvironment.class);
         if (env.isEnable()) {
-            log.error("token start production.");
+            log.info("token start production.");
             try {
                 while (true) {
                     env.getTokenBucket().offer();
