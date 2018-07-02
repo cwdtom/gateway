@@ -110,7 +110,7 @@
         1. enable: 是否开启限流
         1. rate: 令牌生产速率，单位ms
         1. maxSize: 令牌桶大小
-    1. filter: 拦截器
+    1. filter: 拦截器，拦截顺序按配置文件中的顺序执行
         1. before: 前置拦截器
         1. after: 后置连接器
 
