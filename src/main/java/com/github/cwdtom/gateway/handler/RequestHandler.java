@@ -151,6 +151,13 @@ public class RequestHandler implements Runnable {
      * @throws IOException 转发失败
      */
     private void process(String mapping) throws IOException {
+        FilterEnvironment filter = applicationContext.getContext(FilterEnvironment.class);
+        // 前置过滤器
+        if (!filter.beforeFilter(request, content)) {
+            response = ResponseUtils.buildFailResponse(HttpResponseStatus.NOT_ACCEPTABLE);
+            return;
+        }
+
         String url = Constant.HTTP_PREFIX + mapping + request.uri();
         if (request.method().equals(HttpMethod.GET) && mapping != null) {
             // 处理get请求
@@ -179,5 +186,8 @@ public class RequestHandler implements Runnable {
         } else {
             response.headers().set(HttpHeaderNames.CONNECTION.toString(), HttpHeaderValues.CLOSE.toString());
         }
+
+        // 后置过滤器
+        filter.afterFilter(response);
     }
 }

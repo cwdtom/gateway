@@ -46,6 +46,7 @@ public final class ApplicationContext {
         StaticEnvironment staticEnv = new StaticEnvironment(config);
         context.put(StaticEnvironment.class, staticEnv);
         context.put(ThreadPoolGroup.class, new ThreadPoolGroup(config, mappingEnv, staticEnv));
+        context.put(FilterEnvironment.class, new FilterEnvironment(config));
     }
 
     /**

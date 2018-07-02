@@ -40,5 +40,9 @@
     "enable": true,
     "rate": 5,
     "maxSize": 200
+  },
+  "filter": {
+    "before": [],
+    "after": []
   }
 }

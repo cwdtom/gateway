@@ -1,6 +1,6 @@
 # Gateway
 
-![Version](https://img.shields.io/badge/version-2.1.0-green.svg)
+![Version](https://img.shields.io/badge/version-2.2.0-green.svg)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](http://opensource.org/licenses/MIT)
 
 ## Overview
@@ -72,6 +72,14 @@
         "timeout": 500,
         "rate": 5,
         "maxSize": 200
+      },
+      "filter": {
+        "before": [
+          "com.github.cwdtom.gateway.filter.BeforeTestFilter"
+        ],
+        "after": [
+          "com.github.cwdtom.gateway.filter.AfterTestFilter"
+        ]
       }
     }
     ```
@@ -102,3 +110,44 @@
         1. enable: 是否开启限流
         1. rate: 令牌生产速率，单位ms
         1. maxSize: 令牌桶大小
+    1. filter: 拦截器
+        1. before: 前置拦截器
+        1. after: 后置连接器
+
+## REFORM
+
+- 负载均衡算法：可以自定义算法，算法类需要继承UrlMapping类并且实现MappingEnvironment接口。父类UrlMapping含有映射表成员变量mapping。
+
+    ```java
+    public class RandomLoadBalance extends UrlMapping implements MappingEnvironment {
+        @Override
+        public Mapper getLoadBalance(String host, String ip) {
+            // do something
+        }
+    }
+    ```
+    
+- 拦截器：可以自定义拦截器，拦截类需要实现BeforeFilter或AfterFilter接口
+
+    1. 前置拦截器
+    
+    ```java
+    public class TestFilter implements BeforeFilter {
+        @Override
+        public boolean filter(FullHttpRequest request, byte[] content) {
+            // do something
+            return false;
+        }
+    }
+    ```
+    
+    1. 后置拦截器
+    
+    ```java
+    public class TestFilter implements AfterFilter {  
+        @Override
+        public void filter(FullHttpResponse response) {
+            // do something
+        }
+    }
+    ```
