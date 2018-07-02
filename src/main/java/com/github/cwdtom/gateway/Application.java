@@ -9,11 +9,11 @@ import com.github.cwdtom.gateway.mapping.SurvivalCheck;
 import com.github.cwdtom.gateway.thread.DefaultRejectedExecutionHandler;
 import com.github.cwdtom.gateway.thread.DefaultThreadFactory;
 import com.github.cwdtom.gateway.thread.ThreadPoolGroup;
+import com.github.cwdtom.gateway.util.ConsoleUtils;
 import eu.medsea.mimeutil.MimeUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.cli.*;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -31,8 +31,7 @@ public class Application {
      *
      * @param args 参数
      */
-    public static void main(String[] args) throws ParseException, ClassNotFoundException, NoSuchMethodException,
-            InstantiationException, IllegalAccessException, InvocationTargetException {
+    public static void main(String[] args) throws Exception {
         Options options = new Options();
         options.addOption(Constant.COMMAND_CONFIG, true, "config file path");
         options.addOption(Constant.COMMAND_HELP, false, "help info");
@@ -44,7 +43,7 @@ public class Application {
             formatter.printHelp("ant", options);
             System.exit(0);
         } else if (cmd.hasOption(Constant.COMMAND_VERSION)) {
-            System.out.println("version: " + Constant.VERSION);
+            System.out.println("version: " + ConsoleUtils.getVersion());
             System.exit(0);
         }
 

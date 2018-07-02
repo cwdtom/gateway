@@ -8,10 +8,6 @@ package com.github.cwdtom.gateway.constant;
  */
 public class Constant {
     /**
-     * 版本号
-     */
-    public static final String VERSION = "2.2.0";
-    /**
      * 最大单个请求大小，10MB
      */
     public static final int MAX_CONTENT_LEN = 64 * 1024 * 1024;
