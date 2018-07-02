@@ -1,4 +1,4 @@
-package com.github.cwdtom.gateway.environment.impl;
+package com.github.cwdtom.gateway.environment.lb;
 
 import com.github.cwdtom.gateway.environment.MappingEnvironment;
 import com.github.cwdtom.gateway.mapping.Mapper;

@@ -16,10 +16,6 @@ public class TokenProvider implements Runnable {
      * 应用上下文
      */
     private final ApplicationContext applicationContext;
-    /**
-     * 是否中断
-     */
-    private boolean interrupted = false;
 
     public TokenProvider(ApplicationContext applicationContext) {
         this.applicationContext = applicationContext;
@@ -31,12 +27,9 @@ public class TokenProvider implements Runnable {
         if (env.isEnable()) {
             log.info("token start production.");
             try {
-                while (true) {
+                while (!Thread.currentThread().isInterrupted()) {
                     env.getTokenBucket().offer();
                     Thread.sleep(env.getRate());
-                    if (interrupted) {
-                        return;
-                    }
                 }
             } catch (InterruptedException e) {
                 log.error("token production exception.", e);
@@ -44,12 +37,5 @@ public class TokenProvider implements Runnable {
                 run();
             }
         }
-    }
-
-    /**
-     * 关闭
-     */
-    public void shutdown() {
-        interrupted = true;
     }
 }

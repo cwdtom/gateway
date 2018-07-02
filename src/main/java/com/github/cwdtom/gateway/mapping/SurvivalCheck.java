@@ -22,10 +22,6 @@ public class SurvivalCheck implements Runnable {
      * 熔断mapper列表
      */
     private static List<OfflineMapper> mappers = new Vector<>();
-    /**
-     * 是否中断
-     */
-    private boolean interrupted = false;
 
     /**
      * 添加已熔断mapper
@@ -41,7 +37,7 @@ public class SurvivalCheck implements Runnable {
     @Override
     public void run() {
         try {
-            while (true) {
+            while (!Thread.currentThread().isInterrupted()) {
                 Iterator<OfflineMapper> iterator = mappers.iterator();
                 while (iterator.hasNext()) {
                     OfflineMapper o = iterator.next();
@@ -58,21 +54,11 @@ public class SurvivalCheck implements Runnable {
                     } catch (IOException ignored) {
                     }
                 }
-                if (interrupted) {
-                    return;
-                }
                 Thread.sleep(10000);
             }
         } catch (InterruptedException e) {
             log.error("survival check service exception.", e);
             run();
         }
-    }
-
-    /**
-     * 关闭服务
-     */
-    public void shutdown() {
-        interrupted = true;
     }
 }

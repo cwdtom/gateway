@@ -65,12 +65,10 @@ public class Application {
         // 加载mime资源
         MimeUtil.registerMimeDetector("eu.medsea.mimeutil.detector.MagicMimeMimeDetector");
         ThreadPoolGroup tpe = ac.getContext(ThreadPoolGroup.class);
-        // 启动限流
-        TokenProvider token = new TokenProvider(ac);
-        serviceThreadPool.execute(token);
+        // 启动令牌生产
+        serviceThreadPool.execute(new TokenProvider(ac));
         // 开启生存检查
-        SurvivalCheck check = new SurvivalCheck();
-        serviceThreadPool.execute(check);
+        serviceThreadPool.execute(new SurvivalCheck());
         // 启动http监听
         HttpListener http = new HttpListener(ac);
         serviceThreadPool.execute(http);
@@ -84,10 +82,6 @@ public class Application {
             System.out.println("http listener was shutdown!");
             https.shutdown();
             System.out.println("https listener was shutdown!");
-            token.shutdown();
-            System.out.println("token provider was shutdown!");
-            check.shutdown();
-            System.out.println("survival check was shutdown!");
             tpe.shutdown();
             serviceThreadPool.shutdown();
             System.out.println("gateway was shutdown!");

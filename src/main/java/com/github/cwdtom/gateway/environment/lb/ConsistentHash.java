@@ -1,4 +1,4 @@
-package com.github.cwdtom.gateway.environment.impl;
+package com.github.cwdtom.gateway.environment.lb;
 
 import com.github.cwdtom.gateway.constant.Constant;
 import com.github.cwdtom.gateway.environment.MappingEnvironment;

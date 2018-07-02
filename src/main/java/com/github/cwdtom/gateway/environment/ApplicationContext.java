@@ -8,8 +8,8 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * 应用上下文
@@ -22,7 +22,7 @@ public final class ApplicationContext {
     /**
      * 配置
      */
-    private final static Map<Class, Object> CONTEXT = new ConcurrentHashMap<>();
+    private final Map<Class, Object> context = new HashMap<>();
 
     public ApplicationContext(String filePath) throws ClassNotFoundException, InvocationTargetException,
             NoSuchMethodException, InstantiationException, IllegalAccessException {
@@ -32,20 +32,20 @@ public final class ApplicationContext {
         try {
             String json = new String(Files.readAllBytes(Paths.get(filePath)));
             config = new ConfigEnvironment(json);
-            CONTEXT.put(ConfigEnvironment.class, config);
+            context.put(ConfigEnvironment.class, config);
         } catch (IOException e) {
             log.error("config file is not found.");
             System.exit(1);
         }
-        CONTEXT.put(CorsEnvironment.class, new CorsEnvironment(config));
-        CONTEXT.put(FlowLimitsEnvironment.class, new FlowLimitsEnvironment(config));
-        CONTEXT.put(HttpEnvironment.class, new HttpEnvironment(config));
-        CONTEXT.put(HttpsEnvironment.class, new HttpsEnvironment(config));
+        context.put(CorsEnvironment.class, new CorsEnvironment(config));
+        context.put(FlowLimitsEnvironment.class, new FlowLimitsEnvironment(config));
+        context.put(HttpEnvironment.class, new HttpEnvironment(config));
+        context.put(HttpsEnvironment.class, new HttpsEnvironment(config));
         MappingEnvironment mappingEnv = MappingEnvironment.buildMappingEnvironment(config);
-        CONTEXT.put(MappingEnvironment.class, mappingEnv);
+        context.put(MappingEnvironment.class, mappingEnv);
         StaticEnvironment staticEnv = new StaticEnvironment(config);
-        CONTEXT.put(StaticEnvironment.class, staticEnv);
-        CONTEXT.put(ThreadPoolGroup.class, new ThreadPoolGroup(config, mappingEnv, staticEnv));
+        context.put(StaticEnvironment.class, staticEnv);
+        context.put(ThreadPoolGroup.class, new ThreadPoolGroup(config, mappingEnv, staticEnv));
     }
 
     /**
@@ -55,6 +55,6 @@ public final class ApplicationContext {
      * @return 配置对象
      */
     public <T> T getContext(Class<T> clazz) {
-        return clazz.cast(CONTEXT.get(clazz));
+        return clazz.cast(context.get(clazz));
     }
 }

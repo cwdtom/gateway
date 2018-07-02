@@ -46,7 +46,7 @@
         "timeout": 5000
       },
       "mapping": {
-        "mode": "com.github.cwdtom.gateway.environment.impl.ConsistentHash",
+        "mode": "com.github.cwdtom.gateway.environment.lb.ConsistentHash",
         "list": {
           "127.0.0.1:8080": [
             {
