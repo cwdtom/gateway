@@ -65,7 +65,7 @@ public class ConsulEnvironment {
             if (hosts != null) {
                 for (String s : hosts) {
                     List<Mapper> list = mapping.computeIfAbsent(s, k -> new Vector<>());
-                    list.add(new Mapper(service.getAddress() + ":" + service.getPort(), 100));
+                    list.add(new Mapper(s, service.getAddress() + ":" + service.getPort(), 100));
                 }
             }
         }

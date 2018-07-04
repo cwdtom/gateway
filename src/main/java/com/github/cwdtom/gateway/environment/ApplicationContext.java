@@ -8,8 +8,8 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * 应用上下文
@@ -22,7 +22,7 @@ public final class ApplicationContext {
     /**
      * 配置
      */
-    private final Map<Class, Object> context = new HashMap<>();
+    private final Map<Class, Object> context = new ConcurrentHashMap<>();
 
     public ApplicationContext(String filePath) throws ClassNotFoundException, InvocationTargetException,
             NoSuchMethodException, InstantiationException, IllegalAccessException {
@@ -48,8 +48,8 @@ public final class ApplicationContext {
         context.put(ThreadPoolGroup.class, new ThreadPoolGroup(config, mappingEnv, staticEnv));
         context.put(FilterEnvironment.class, new FilterEnvironment(config));
         ConsulEnvironment consul = new ConsulEnvironment(config);
+        context.put(ConsulEnvironment.class, consul);
         if (consul.isEnable()) {
-            context.put(ConsulEnvironment.class, consul);
             context.put(MappingEnvironment.class, consul.buildMapping());
         }
     }
@@ -62,5 +62,15 @@ public final class ApplicationContext {
      */
     public <T> T getContext(Class<T> clazz) {
         return clazz.cast(context.get(clazz));
+    }
+
+    /**
+     * 设置上下文
+     *
+     * @param clazz 配置类
+     * @param t     实体对象
+     */
+    public <T> void setContext(Class<T> clazz, T t) {
+        context.put(clazz, t);
     }
 }

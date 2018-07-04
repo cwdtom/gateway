@@ -1,7 +1,6 @@
 package com.github.cwdtom.gateway.mapping;
 
 import com.github.cwdtom.gateway.constant.Constant;
-import io.netty.handler.codec.http.HttpMethod;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 
@@ -15,6 +14,10 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class Mapper {
     /**
+     * host
+     */
+    private String host;
+    /**
      * 权重
      */
     private int weight;
@@ -22,13 +25,13 @@ public class Mapper {
      * 异常次数
      */
     private int exceptionCount;
-
     /**
      * 目标url
      */
     private String target;
 
-    public Mapper(String target, Integer weight) {
+    public Mapper(String host, String target, Integer weight) {
+        this.host = host;
         this.target = target;
         // 无权重时默认值100
         this.weight = weight == null || weight < 0 ? 100 : weight;
@@ -50,19 +53,30 @@ public class Mapper {
     /**
      * 目标代理异常
      *
-     * @param method      请求类型
-     * @param uri         uri
-     * @param contentType 消息类型
      * @return 异常目标url
      */
-    public String exception(HttpMethod method, String uri, String contentType) {
+    public String exception() {
         this.exceptionCount++;
         if (!isOnline()) {
             log.error("{} offline.", target);
             // 放入存活检查列条
-            SurvivalCheck.add(new OfflineMapper(this, method, uri, contentType));
+            SurvivalCheck.add(this);
         }
         return target;
+    }
+
+    @Override
+    public int hashCode() {
+        return (host + "#" + target).hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof Mapper) {
+            Mapper m = (Mapper) obj;
+            return target.equals(m.target) && host.equals(m.target);
+        }
+        return false;
     }
 
     /**

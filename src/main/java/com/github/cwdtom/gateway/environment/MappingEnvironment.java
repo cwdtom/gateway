@@ -60,7 +60,7 @@ public interface MappingEnvironment {
             List<Mapper> urls = new Vector<>(len);
             for (int i = 0; i < len; i++) {
                 JSONObject object = arr.getJSONObject(i);
-                urls.add(new Mapper(object.getString("url"), object.getInteger("weight")));
+                urls.add(new Mapper(entry.getKey(), object.getString("url"), object.getInteger("weight")));
             }
             map.put(entry.getKey(), urls);
         }

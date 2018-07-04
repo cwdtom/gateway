@@ -67,7 +67,7 @@ public class Application {
         // 启动令牌生产
         serviceThreadPool.execute(new TokenProvider(ac));
         // 开启生存检查
-        serviceThreadPool.execute(new SurvivalCheck());
+        serviceThreadPool.execute(new SurvivalCheck(ac));
         // 启动http监听
         HttpListener http = new HttpListener(ac);
         serviceThreadPool.execute(http);
