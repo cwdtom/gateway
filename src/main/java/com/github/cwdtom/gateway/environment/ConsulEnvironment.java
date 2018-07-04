@@ -7,11 +7,16 @@ import com.ecwid.consul.v1.ConsulClient;
 import com.ecwid.consul.v1.QueryParams;
 import com.ecwid.consul.v1.Response;
 import com.ecwid.consul.v1.health.model.HealthService;
-import com.github.cwdtom.gateway.environment.lb.ConsistentHash;
+import com.github.cwdtom.gateway.environment.lb.UrlMapping;
 import com.github.cwdtom.gateway.mapping.Mapper;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.*;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
 
 /**
  * consul配置
@@ -33,8 +38,12 @@ public class ConsulEnvironment {
      * server映射host
      */
     private Map<String, List<String>> map = new HashMap<>();
+    /**
+     * 算法class
+     */
+    private Class<? extends UrlMapping> clazz;
 
-    ConsulEnvironment(ConfigEnvironment config) {
+    ConsulEnvironment(ConfigEnvironment config) throws ClassNotFoundException {
         JSONObject obj = JSON.parseObject(config.getChild("consul"));
         enable = obj.getBoolean("enable");
         client = new ConsulClient(obj.getString("host"));
@@ -43,6 +52,8 @@ public class ConsulEnvironment {
             JSONArray arr = (JSONArray) entry.getValue();
             map.put(entry.getKey(), arr.toJavaList(String.class));
         }
+        JSONObject mappingObj = JSON.parseObject(config.getChild("mapping"));
+        clazz = Class.forName(mappingObj.getString("mode")).asSubclass(UrlMapping.class);
     }
 
     public boolean isEnable() {
@@ -54,7 +65,8 @@ public class ConsulEnvironment {
      *
      * @return 映射接口
      */
-    public MappingEnvironment buildMapping() {
+    public MappingEnvironment buildMapping() throws NoSuchMethodException, IllegalAccessException,
+            InvocationTargetException, InstantiationException {
         log.info("consul service discovery, rebuild load balance.");
         Response<List<HealthService>> response = client.getHealthServices("test",
                 true, QueryParams.DEFAULT);
@@ -69,7 +81,8 @@ public class ConsulEnvironment {
                 }
             }
         }
-        // 使用一致性hash负载
-        return new ConsistentHash(mapping);
+        Constructor<? extends UrlMapping> constructor = clazz.getDeclaredConstructor(Map.class);
+        constructor.setAccessible(true);
+        return constructor.newInstance(mapping);
     }
 }

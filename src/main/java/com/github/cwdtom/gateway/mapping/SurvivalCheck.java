@@ -8,7 +8,9 @@ import com.github.cwdtom.gateway.util.HttpUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
 
 /**
  * 存活检查
@@ -65,7 +67,7 @@ public class SurvivalCheck implements Runnable {
                     mappers.clear();
                 }
             }
-        } catch (InterruptedException e) {
+        } catch (Exception e) {
             log.error("survival check service exception.", e);
             run();
         }
