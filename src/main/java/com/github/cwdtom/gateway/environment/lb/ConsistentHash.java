@@ -1,6 +1,7 @@
 package com.github.cwdtom.gateway.environment.lb;
 
 import com.github.cwdtom.gateway.constant.Constant;
+import com.github.cwdtom.gateway.constant.LoadBalanceConstant;
 import com.github.cwdtom.gateway.environment.MappingEnvironment;
 import com.github.cwdtom.gateway.mapping.Mapper;
 import lombok.NoArgsConstructor;
@@ -32,7 +33,7 @@ public class ConsistentHash extends UrlMapping implements MappingEnvironment {
             }
             List<Node> nodes = new LinkedList<>();
             for (Mapper mapper : mappers) {
-                int count = Constant.MAX_NODE_SIZE * mapper.getWeight() / sum;
+                int count = LoadBalanceConstant.MAX_NODE_SIZE * mapper.getWeight() / sum;
                 StringBuilder sb = new StringBuilder(mapper.getTarget()).append("#");
                 // 确保最少拥有一个节点
                 if (count < 1) {
@@ -69,7 +70,7 @@ public class ConsistentHash extends UrlMapping implements MappingEnvironment {
         if (node == null) {
             return null;
         }
-        if (hashCode > Constant.MID_INT) {
+        if (hashCode > LoadBalanceConstant.MID_INT) {
             node = node.prev;
             while (node.mapper != null) {
                 if (node.hashCode > hashCode && node.mapper.isOnline()) {

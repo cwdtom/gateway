@@ -1,6 +1,7 @@
 package com.github.cwdtom.gateway.listener;
 
 import com.github.cwdtom.gateway.constant.Constant;
+import com.github.cwdtom.gateway.constant.HttpConstant;
 import com.github.cwdtom.gateway.environment.ApplicationContext;
 import com.github.cwdtom.gateway.environment.HttpEnvironment;
 import com.github.cwdtom.gateway.handler.HttpHandler;
@@ -84,7 +85,7 @@ public class HttpListener implements Runnable {
                 p.addLast(new HttpRequestDecoder());
                 p.addLast(new IdleStateHandler(0, 0, 20));
                 p.addLast(new HttpContentCompressor());
-                p.addLast(new HttpObjectAggregator(Constant.MAX_CONTENT_LEN));
+                p.addLast(new HttpObjectAggregator(HttpConstant.MAX_CONTENT_LEN));
                 p.addLast(new HttpHandler(applicationContext, false));
             }
         });

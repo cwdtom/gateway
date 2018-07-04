@@ -1,0 +1,9 @@
+language: java
+
+jdk:
+  - oraclejdk9
+  - oraclejdk8
+
+notifications:
+  email:
+    - cwdtom@gmail.com

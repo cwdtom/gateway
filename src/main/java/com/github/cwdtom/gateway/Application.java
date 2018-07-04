@@ -1,6 +1,6 @@
 package com.github.cwdtom.gateway;
 
-import com.github.cwdtom.gateway.constant.Constant;
+import com.github.cwdtom.gateway.constant.ConsoleConstant;
 import com.github.cwdtom.gateway.environment.ApplicationContext;
 import com.github.cwdtom.gateway.limit.TokenProvider;
 import com.github.cwdtom.gateway.listener.HttpListener;
@@ -31,24 +31,24 @@ public class Application {
      */
     public static void main(String[] args) throws Exception {
         Options options = new Options();
-        options.addOption(Constant.COMMAND_CONFIG, true, "config file path");
-        options.addOption(Constant.COMMAND_HELP, false, "help info");
-        options.addOption(Constant.COMMAND_VERSION, false, "show version info");
+        options.addOption(ConsoleConstant.COMMAND_CONFIG, true, "config file path");
+        options.addOption(ConsoleConstant.COMMAND_HELP, false, "help info");
+        options.addOption(ConsoleConstant.COMMAND_VERSION, false, "show version info");
         CommandLineParser parser = new DefaultParser();
         CommandLine cmd = parser.parse(options, args);
-        if (cmd.hasOption(Constant.COMMAND_HELP)) {
+        if (cmd.hasOption(ConsoleConstant.COMMAND_HELP)) {
             HelpFormatter formatter = new HelpFormatter();
             formatter.printHelp("ant", options);
             System.exit(0);
-        } else if (cmd.hasOption(Constant.COMMAND_VERSION)) {
+        } else if (cmd.hasOption(ConsoleConstant.COMMAND_VERSION)) {
             System.out.println("version: " + ConsoleUtils.getVersion());
             System.exit(0);
         }
 
         ApplicationContext ac = null;
-        if (cmd.hasOption(Constant.COMMAND_CONFIG)) {
+        if (cmd.hasOption(ConsoleConstant.COMMAND_CONFIG)) {
             // 初始化上下文
-            ac = new ApplicationContext(cmd.getOptionValue(Constant.COMMAND_CONFIG));
+            ac = new ApplicationContext(cmd.getOptionValue(ConsoleConstant.COMMAND_CONFIG));
         } else {
             System.out.println("config file path arg is not found.");
             System.exit(1);

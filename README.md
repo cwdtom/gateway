@@ -1,6 +1,7 @@
 # Gateway
 
-![Version](https://img.shields.io/badge/version-3.0.1-green.svg)
+![Version](https://img.shields.io/badge/version-3.0.2-green.svg)
+[![Build Status](https://travis-ci.org/cwdtom/gateway.svg?branch=master)](https://travis-ci.org/cwdtom/gateway)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](http://opensource.org/licenses/MIT)
 
 ## Overview
@@ -18,6 +19,9 @@
 1. 静态文件映射
 1. 支持consul自动服务发现，启用后原mapping配置失效，每个节点拥有相同的权重
 1. 开发者模式输出详细日志，生产环境时只输出warn及以上
+
+## Download
+下载最[新版本JAR包](https://github.com/cwdtom/gateway/releases/download/3.0.1/gateway-3.0.1.jar)
 
 ## Usage
 

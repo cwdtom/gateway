@@ -1,6 +1,7 @@
 package com.github.cwdtom.gateway.mapping;
 
 import com.github.cwdtom.gateway.constant.Constant;
+import com.github.cwdtom.gateway.constant.HttpConstant;
 import com.github.cwdtom.gateway.environment.ApplicationContext;
 import com.github.cwdtom.gateway.environment.ConsulEnvironment;
 import com.github.cwdtom.gateway.environment.MappingEnvironment;
@@ -52,7 +53,7 @@ public class SurvivalCheck implements Runnable {
                 while (iterator.hasNext()) {
                     Mapper m = iterator.next();
                     try {
-                        HttpUtils.sendGet(Constant.HTTP_PREFIX + m.getTarget());
+                        HttpUtils.sendGet(HttpConstant.HTTP_PREFIX + m.getTarget());
                         // 服务恢复
                         m.setExceptionCount(0);
                         iterator.remove();

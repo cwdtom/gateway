@@ -1,6 +1,7 @@
 package com.github.cwdtom.gateway.mapping;
 
 import com.github.cwdtom.gateway.constant.Constant;
+import com.github.cwdtom.gateway.constant.LoadBalanceConstant;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 
@@ -85,6 +86,6 @@ public class Mapper {
      * @return 是否健康
      */
     public boolean isOnline() {
-        return exceptionCount < Constant.OFFLINE_COUNT;
+        return exceptionCount < LoadBalanceConstant.OFFLINE_COUNT;
     }
 }

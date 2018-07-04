@@ -1,6 +1,7 @@
 package com.github.cwdtom.gateway.util;
 
 import com.github.cwdtom.gateway.constant.Constant;
+import com.github.cwdtom.gateway.constant.HttpConstant;
 import eu.medsea.mimeutil.MimeUtil;
 import io.netty.buffer.Unpooled;
 import io.netty.handler.codec.http.*;
@@ -98,7 +99,7 @@ public class ResponseUtils {
      * @return 响应
      */
     public static FullHttpResponse buildRedirectResponse(String host) {
-        byte[] content = String.format(Constant.REDIRECT_TEMPLATE, Constant.HTTPS_PREFIX + host).getBytes();
+        byte[] content = String.format(HttpConstant.REDIRECT_TEMPLATE, HttpConstant.HTTPS_PREFIX + host).getBytes();
         FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK,
                 Unpooled.wrappedBuffer(content));
         response.headers().set(HttpHeaderNames.CONTENT_TYPE.toString(), "text/html")

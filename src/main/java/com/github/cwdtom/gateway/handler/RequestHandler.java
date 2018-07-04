@@ -1,6 +1,7 @@
 package com.github.cwdtom.gateway.handler;
 
 import com.github.cwdtom.gateway.constant.Constant;
+import com.github.cwdtom.gateway.constant.HttpConstant;
 import com.github.cwdtom.gateway.environment.*;
 import com.github.cwdtom.gateway.mapping.Mapper;
 import com.github.cwdtom.gateway.util.HttpUtils;
@@ -157,7 +158,7 @@ public class RequestHandler implements Runnable {
             return;
         }
 
-        String url = Constant.HTTP_PREFIX + mapping + request.uri();
+        String url = HttpConstant.HTTP_PREFIX + mapping + request.uri();
         if (request.method().equals(HttpMethod.GET) && mapping != null) {
             // 处理get请求
             log.info("GET {}", url);
