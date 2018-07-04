@@ -55,20 +55,24 @@ public class ResponseUtils {
      * @return 响应
      */
     public static FullHttpResponse buildResponse(Response resp) throws IOException {
-        FullHttpResponse response;
-        ResponseBody responseBody  = resp.body();
-        if (responseBody == null) {
-            response = new DefaultFullHttpResponse(HttpVersion.valueOf(resp.protocol().toString()),
-                    HttpResponseStatus.valueOf(resp.code()));
-        } else {
-            response = new DefaultFullHttpResponse(HttpVersion.valueOf(resp.protocol().toString()),
-                    HttpResponseStatus.valueOf(resp.code()),
-                    Unpooled.wrappedBuffer(responseBody.bytes()));
+        try {
+            FullHttpResponse response;
+            ResponseBody responseBody  = resp.body();
+            if (responseBody == null) {
+                response = new DefaultFullHttpResponse(HttpVersion.valueOf(resp.protocol().toString()),
+                        HttpResponseStatus.valueOf(resp.code()));
+            } else {
+                response = new DefaultFullHttpResponse(HttpVersion.valueOf(resp.protocol().toString()),
+                        HttpResponseStatus.valueOf(resp.code()),
+                        Unpooled.wrappedBuffer(responseBody.bytes()));
+            }
+            for (Map.Entry<String, List<String>> entry : resp.headers().toMultimap().entrySet()) {
+                response.headers().set(entry.getKey(), entry.getValue());
+            }
+            return response;
+        } finally {
+            resp.close();
         }
-        for (Map.Entry<String, List<String>> entry : resp.headers().toMultimap().entrySet()) {
-            response.headers().set(entry.getKey(), entry.getValue());
-        }
-        return response;
     }
 
     /**

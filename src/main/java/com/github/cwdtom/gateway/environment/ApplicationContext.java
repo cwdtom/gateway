@@ -47,6 +47,11 @@ public final class ApplicationContext {
         context.put(StaticEnvironment.class, staticEnv);
         context.put(ThreadPoolGroup.class, new ThreadPoolGroup(config, mappingEnv, staticEnv));
         context.put(FilterEnvironment.class, new FilterEnvironment(config));
+        ConsulEnvironment consul = new ConsulEnvironment(config);
+        if (consul.isEnable()) {
+            context.put(ConsulEnvironment.class, consul);
+            context.put(MappingEnvironment.class, consul.buildMapping());
+        }
     }
 
     /**

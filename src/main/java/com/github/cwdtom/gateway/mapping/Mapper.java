@@ -2,6 +2,8 @@ package com.github.cwdtom.gateway.mapping;
 
 import com.github.cwdtom.gateway.constant.Constant;
 import io.netty.handler.codec.http.HttpMethod;
+import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * 映射器
@@ -9,6 +11,8 @@ import io.netty.handler.codec.http.HttpMethod;
  * @author chenweidong
  * @since 1.4.0
  */
+@ToString
+@Slf4j
 public class Mapper {
     /**
      * 权重
@@ -54,6 +58,7 @@ public class Mapper {
     public String exception(HttpMethod method, String uri, String contentType) {
         this.exceptionCount++;
         if (!isOnline()) {
+            log.error("{} offline.", target);
             // 放入存活检查列条
             SurvivalCheck.add(new OfflineMapper(this, method, uri, contentType));
         }

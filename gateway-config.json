@@ -44,5 +44,14 @@
   "filter": {
     "before": [],
     "after": []
+  },
+  "consul": {
+    "enable": true,
+    "host": "192.168.0.236:8500",
+    "mapping": {
+      "test": [
+        "localhost:8080"
+      ]
+    }
   }
 }

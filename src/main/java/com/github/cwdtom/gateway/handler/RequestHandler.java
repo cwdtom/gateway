@@ -111,8 +111,7 @@ public class RequestHandler implements Runnable {
             if (mapper == null) {
                 log.error("{} {} static resource is unable.", host, request.uri());
             } else {
-                log.error("{} {} offline.", host, mapper.exception(request.method(), request.uri(),
-                        request.headers().get(HttpHeaderNames.CONTENT_TYPE)));
+                mapper.exception(request.method(), request.uri(), request.headers().get(HttpHeaderNames.CONTENT_TYPE));
             }
         } finally {
             if (response != null) {
