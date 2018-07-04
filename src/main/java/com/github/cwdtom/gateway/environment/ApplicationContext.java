@@ -1,8 +1,11 @@
 package com.github.cwdtom.gateway.environment;
 
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.LoggerContext;
 import com.github.cwdtom.gateway.thread.ThreadPoolGroup;
 import io.netty.util.ResourceLeakDetector;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -17,7 +20,6 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author chenweidong
  * @since 1.7.2
  */
-@Slf4j
 public final class ApplicationContext {
     /**
      * 配置
@@ -34,8 +36,14 @@ public final class ApplicationContext {
             config = new ConfigEnvironment(json);
             context.put(ConfigEnvironment.class, config);
         } catch (IOException e) {
-            log.error("config file is not found.");
+            System.out.println("config file is not found.");
             System.exit(1);
+        }
+        if (!config.isDevelop()) {
+            // 如果不是开发者模式，提高日志等级
+            LoggerContext loggerContext= (LoggerContext) LoggerFactory.getILoggerFactory();
+            Logger logger=loggerContext.getLogger("root");
+            logger.setLevel(Level.toLevel("WARN"));
         }
         context.put(CorsEnvironment.class, new CorsEnvironment(config));
         context.put(FlowLimitsEnvironment.class, new FlowLimitsEnvironment(config));

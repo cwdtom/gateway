@@ -1,6 +1,7 @@
 package com.github.cwdtom.gateway.environment;
 
 import com.alibaba.fastjson.JSONObject;
+import com.github.cwdtom.gateway.constant.Constant;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.HashMap;
@@ -18,6 +19,10 @@ public class ConfigEnvironment {
      * 配置json对象
      */
     private Map<String, String> config;
+    /**
+     * 是否是开发环境
+     */
+    private boolean isDevelop;
 
     /**
      * 获取配置json
@@ -40,5 +45,11 @@ public class ConfigEnvironment {
             map.put(entry.getKey(), entry.getValue().toString());
         }
         config = map;
+        Object o = map.get("mode");
+        this.isDevelop = o != null && o.toString().equals(Constant.DEVELOP);
+    }
+
+    public boolean isDevelop() {
+        return isDevelop;
     }
 }

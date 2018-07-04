@@ -1,6 +1,6 @@
 # Gateway
 
-![Version](https://img.shields.io/badge/version-3.0.0-green.svg)
+![Version](https://img.shields.io/badge/version-3.0.1-green.svg)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](http://opensource.org/licenses/MIT)
 
 ## Overview
@@ -17,6 +17,7 @@
 1. 在linux下采用epoll其他系统采用nio
 1. 静态文件映射
 1. 支持consul自动服务发现，启用后原mapping配置失效
+1. 开发者模式输出详细日志，生产环境时只输出warn及以上
 
 ## Usage
 
@@ -31,6 +32,7 @@
 - config.json
     ```json
     {
+      "mode": "dev",
       "http": {
         "port": 8080,
         "redirectHttps": false
@@ -93,6 +95,7 @@
       }
     }
     ```
+    1. mode: 运行模式，不为dev或缺省时，日志只输出warn及以上
     1. http: http相关配置
         1. port: 端口号
         1. redirectHttps: 是否重定向至https

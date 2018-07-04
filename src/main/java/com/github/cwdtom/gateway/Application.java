@@ -11,7 +11,6 @@ import com.github.cwdtom.gateway.thread.DefaultThreadFactory;
 import com.github.cwdtom.gateway.thread.ThreadPoolGroup;
 import com.github.cwdtom.gateway.util.ConsoleUtils;
 import eu.medsea.mimeutil.MimeUtil;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.cli.*;
 
 import java.util.concurrent.ArrayBlockingQueue;
@@ -24,7 +23,6 @@ import java.util.concurrent.TimeUnit;
  * @author chenweidong
  * @since 1.0.0
  */
-@Slf4j
 public class Application {
     /**
      * 启动方法
@@ -52,7 +50,7 @@ public class Application {
             // 初始化上下文
             ac = new ApplicationContext(cmd.getOptionValue(Constant.COMMAND_CONFIG));
         } else {
-            log.error("config file path arg is not found.");
+            System.out.println("config file path arg is not found.");
             System.exit(1);
         }
 
@@ -74,6 +72,7 @@ public class Application {
         // 启动https监听
         HttpsListener https = new HttpsListener(ac);
         serviceThreadPool.execute(https);
+        System.out.println("gateway is running.");
 
         // 添加销毁事件
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
