@@ -1,4 +1,5 @@
 {
+  "mode": "dev",
   "http": {
     "port": 8080,
     "redirectHttps": false
@@ -44,5 +45,14 @@
   "filter": {
     "before": [],
     "after": []
+  },
+  "consul": {
+    "enable": false,
+    "host": "192.168.0.236:8500",
+    "mapping": {
+      "test": [
+        "localhost:8080"
+      ]
+    }
   }
 }

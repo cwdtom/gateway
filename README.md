@@ -1,6 +1,6 @@
 # Gateway
 
-![Version](https://img.shields.io/badge/version-2.2.1-green.svg)
+![Version](https://img.shields.io/badge/version-3.0.1-green.svg)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](http://opensource.org/licenses/MIT)
 
 ## Overview
@@ -16,6 +16,8 @@
 1. 支持熔断不可用服务，并在单独线程中进行重试，成功以后重新设置为可用
 1. 在linux下采用epoll其他系统采用nio
 1. 静态文件映射
+1. 支持consul自动服务发现，启用后原mapping配置失效
+1. 开发者模式输出详细日志，生产环境时只输出warn及以上
 
 ## Usage
 
@@ -30,6 +32,7 @@
 - config.json
     ```json
     {
+      "mode": "dev",
       "http": {
         "port": 8080,
         "redirectHttps": false
@@ -80,9 +83,19 @@
         "after": [
           "com.github.cwdtom.gateway.filter.AfterTestFilter"
         ]
+      },
+      "consul": {
+        "enable": true,
+        "host": "192.168.0.236:8500",
+        "mapping": {
+          "test": [
+            "localhost:8080"
+          ]
+        }
       }
     }
     ```
+    1. mode: 运行模式，不为dev或缺省时，日志只输出warn及以上
     1. http: http相关配置
         1. port: 端口号
         1. redirectHttps: 是否重定向至https
@@ -113,6 +126,12 @@
     1. filter: 拦截器，拦截顺序按配置文件中的顺序执行
         1. before: 前置拦截器
         1. after: 后置连接器
+    1. consul: consul注册中心配置
+        1. enable: 是否启用，启用后原mapping配置失效
+        1. host: consul地址
+        1. mapping: 服务映射
+            1. key: service名字 spring.application.name
+            1. value: host列表
 
 ## REFORM
 

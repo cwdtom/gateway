@@ -47,9 +47,6 @@ public class HttpUtils {
                 .header("user-agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1;SV1)")
                 .url(url).build();
         Response response = CLIENT.newCall(request).execute();
-        if (!response.isSuccessful()) {
-            throw new IOException();
-        }
         return ResponseUtils.buildResponse(response);
     }
 
@@ -61,9 +58,6 @@ public class HttpUtils {
      * @return 响应结果
      */
     public static FullHttpResponse sendPost(String url, byte[] param, String contentType) throws IOException {
-        if (param == null || contentType == null) {
-            throw new IOException();
-        }
         Request request = new Request.Builder()
                 .header("accept", "*/*")
                 .header("connection", "Keep-Alive")
@@ -71,9 +65,6 @@ public class HttpUtils {
                 .post(RequestBody.create(MediaType.parse(contentType), param))
                 .url(url).build();
         Response response = CLIENT.newCall(request).execute();
-        if (!response.isSuccessful()) {
-            throw new IOException();
-        }
         return ResponseUtils.buildResponse(response);
     }
 }

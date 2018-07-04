@@ -55,4 +55,8 @@ public class Constant {
      * 中位数
      */
     public static final int MID_INT = Integer.MAX_VALUE / 2;
+    /**
+     * 开发者模式
+     */
+    public static final String DEVELOP = "dev";
 }

@@ -1,14 +1,14 @@
 package com.github.cwdtom.gateway.mapping;
 
 import com.github.cwdtom.gateway.constant.Constant;
+import com.github.cwdtom.gateway.environment.ApplicationContext;
+import com.github.cwdtom.gateway.environment.ConsulEnvironment;
+import com.github.cwdtom.gateway.environment.MappingEnvironment;
 import com.github.cwdtom.gateway.util.HttpUtils;
-import io.netty.handler.codec.http.HttpMethod;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Vector;
+import java.util.*;
 
 /**
  * 存活检查
@@ -21,40 +21,49 @@ public class SurvivalCheck implements Runnable {
     /**
      * 熔断mapper列表
      */
-    private static List<OfflineMapper> mappers = new Vector<>();
+    private static Set<Mapper> mappers = new HashSet<>();
+    /**
+     * 应用上下文
+     */
+    private ApplicationContext context;
+
+    public SurvivalCheck(ApplicationContext context) {
+        this.context = context;
+    }
 
     /**
      * 添加已熔断mapper
      *
      * @param mapper mapper
      */
-    public static void add(OfflineMapper mapper) {
-        if (!mappers.contains(mapper)) {
-            mappers.add(mapper);
-        }
+    public static void add(Mapper mapper) {
+        mappers.add(mapper);
     }
 
     @Override
     public void run() {
+        ConsulEnvironment consul = context.getContext(ConsulEnvironment.class);
+        int count = 0;
         try {
             while (!Thread.currentThread().isInterrupted()) {
-                Iterator<OfflineMapper> iterator = mappers.iterator();
+                Iterator<Mapper> iterator = mappers.iterator();
                 while (iterator.hasNext()) {
-                    OfflineMapper o = iterator.next();
+                    Mapper m = iterator.next();
                     try {
-                        String url = Constant.HTTP_PREFIX + o.getMapper().getTarget() + o.getUri();
-                        if (o.getMethod().equals(HttpMethod.GET)) {
-                            HttpUtils.sendGet(url);
-                        } else if (o.getMethod().equals(HttpMethod.POST)) {
-                            HttpUtils.sendPost(url, new byte[0], o.getContentType());
-                        }
+                        HttpUtils.sendGet(Constant.HTTP_PREFIX + m.getTarget());
                         // 服务恢复
-                        o.getMapper().setExceptionCount(0);
+                        m.setExceptionCount(0);
                         iterator.remove();
                     } catch (IOException ignored) {
                     }
                 }
                 Thread.sleep(10000);
+                // 每隔100秒从consul重建映射
+                count++;
+                if (count % 10 == 0 && consul.isEnable()) {
+                    context.setContext(MappingEnvironment.class, consul.buildMapping());
+                    mappers.clear();
+                }
             }
         } catch (InterruptedException e) {
             log.error("survival check service exception.", e);

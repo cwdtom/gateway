@@ -66,6 +66,9 @@ public class ConsistentHash extends UrlMapping implements MappingEnvironment {
     public Mapper getLoadBalance(String host, String ip) {
         int hashCode = ip.hashCode();
         Node node = hashLoop.get(host);
+        if (node == null) {
+            return null;
+        }
         if (hashCode > Constant.MID_INT) {
             node = node.prev;
             while (node.mapper != null) {
