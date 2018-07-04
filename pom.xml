@@ -6,7 +6,7 @@
 
     <groupId>com.github.cwdtom</groupId>
     <artifactId>gateway</artifactId>
-    <version>${project.version}</version>
+    <version>3.0.2</version>
     <packaging>jar</packaging>
     <name>gateway</name>
     <url>https://github.com/cwdtom/gateway</url>
@@ -81,13 +81,19 @@
             <artifactId>consul-api</artifactId>
             <version>1.4.0</version>
         </dependency>
+        <!-- junit -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.12</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <maven.compiler.encoding>UTF-8</maven.compiler.encoding>
-        <project.version>3.0.2</project.version>
     </properties>
 
     <build>

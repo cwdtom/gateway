@@ -1,6 +1,5 @@
 package com.github.cwdtom.gateway.environment.lb;
 
-import com.github.cwdtom.gateway.constant.Constant;
 import com.github.cwdtom.gateway.constant.LoadBalanceConstant;
 import com.github.cwdtom.gateway.environment.MappingEnvironment;
 import com.github.cwdtom.gateway.mapping.Mapper;

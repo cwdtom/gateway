@@ -1,6 +1,5 @@
 package com.github.cwdtom.gateway.mapping;
 
-import com.github.cwdtom.gateway.constant.Constant;
 import com.github.cwdtom.gateway.constant.HttpConstant;
 import com.github.cwdtom.gateway.environment.ApplicationContext;
 import com.github.cwdtom.gateway.environment.ConsulEnvironment;

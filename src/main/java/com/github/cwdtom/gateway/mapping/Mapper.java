@@ -1,6 +1,5 @@
 package com.github.cwdtom.gateway.mapping;
 
-import com.github.cwdtom.gateway.constant.Constant;
 import com.github.cwdtom.gateway.constant.LoadBalanceConstant;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;

@@ -1,6 +1,5 @@
 package com.github.cwdtom.gateway.util;
 
-import com.github.cwdtom.gateway.constant.Constant;
 import com.github.cwdtom.gateway.constant.HttpConstant;
 import eu.medsea.mimeutil.MimeUtil;
 import io.netty.buffer.Unpooled;
@@ -31,21 +30,6 @@ public class ResponseUtils {
     public static FullHttpResponse buildFailResponse(HttpResponseStatus status) {
         FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, status);
         response.headers().set(HttpHeaderNames.CONTENT_LENGTH.toString(), response.content().readableBytes());
-        return response;
-    }
-
-    /**
-     * 构造成功响应
-     *
-     * @param content     内容
-     * @param contentType 内容类型
-     * @return 成功响应
-     */
-    public static FullHttpResponse buildSuccessResponse(String content, String contentType) {
-        FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK,
-                Unpooled.wrappedBuffer(content.getBytes()));
-        response.headers().set(HttpHeaderNames.CONTENT_TYPE.toString(), contentType)
-                .set(HttpHeaderNames.CONTENT_LENGTH.toString(), response.content().readableBytes());
         return response;
     }
 
