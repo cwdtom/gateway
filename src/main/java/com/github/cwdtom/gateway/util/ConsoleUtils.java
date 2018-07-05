@@ -18,6 +18,7 @@ public class ConsoleUtils {
      * 获取版本号
      *
      * @return 版本号
+     * @throws IOException 读取文件错误
      */
     public static String getVersion() throws IOException {
         JarFile jarFile = new JarFile(Application.class.getProtectionDomain().getCodeSource().getLocation().getPath());

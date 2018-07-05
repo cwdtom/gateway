@@ -38,11 +38,12 @@ public class ResponseUtils {
      *
      * @param resp 响应内容
      * @return 响应
+     * @throws IOException 网络异常
      */
     public static FullHttpResponse buildResponse(Response resp) throws IOException {
         try {
             FullHttpResponse response;
-            ResponseBody responseBody  = resp.body();
+            ResponseBody responseBody = resp.body();
             if (responseBody == null) {
                 response = new DefaultFullHttpResponse(HttpVersion.valueOf(resp.protocol().toString()),
                         HttpResponseStatus.valueOf(resp.code()));
@@ -66,6 +67,7 @@ public class ResponseUtils {
      * @param file    文件
      * @param version http版本
      * @return 响应
+     * @throws IOException 文件读取异常
      */
     public static FullHttpResponse buildResponse(File file, HttpVersion version) throws IOException {
         FullHttpResponse response = new DefaultFullHttpResponse(version, HttpResponseStatus.OK,

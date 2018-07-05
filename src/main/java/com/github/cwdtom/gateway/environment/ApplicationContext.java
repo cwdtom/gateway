@@ -41,8 +41,8 @@ public final class ApplicationContext {
         }
         if (!config.isDevelop()) {
             // 如果不是开发者模式，提高日志等级
-            LoggerContext loggerContext= (LoggerContext) LoggerFactory.getILoggerFactory();
-            Logger logger=loggerContext.getLogger("root");
+            LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
+            Logger logger = loggerContext.getLogger("root");
             logger.setLevel(Level.toLevel("WARN"));
         }
         context.put(CorsEnvironment.class, new CorsEnvironment(config));
@@ -66,6 +66,7 @@ public final class ApplicationContext {
      * 获取上下文
      *
      * @param clazz 配置类
+     * @param <T>   类泛型
      * @return 配置对象
      */
     public <T> T getContext(Class<T> clazz) {
@@ -77,6 +78,7 @@ public final class ApplicationContext {
      *
      * @param clazz 配置类
      * @param t     实体对象
+     * @param <T>   类泛型
      */
     public <T> void setContext(Class<T> clazz, T t) {
         context.put(clazz, t);

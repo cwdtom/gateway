@@ -26,19 +26,9 @@ public class HttpUtils {
     /**
      * 发送GET请求
      *
-     * @param url   目标URL
-     * @param param 参数，格式：name1=value1&name2=value2
-     * @return 响应结果
-     */
-    public static FullHttpResponse sendGet(String url, String param) throws IOException {
-        return sendGet(url + "?" + param);
-    }
-
-    /**
-     * 发送GET请求
-     *
      * @param url 目标URL
      * @return 响应结果
+     * @throws IOException 请求异常
      */
     public static FullHttpResponse sendGet(String url) throws IOException {
         Request request = new Request.Builder()
@@ -53,8 +43,9 @@ public class HttpUtils {
     /**
      * 发送POST请求
      *
-     * @param url   目标URL
-     * @param param 参数
+     * @param url         目标URL
+     * @param param       数据
+     * @param contentType 数据类型
      * @return 响应结果
      */
     public static FullHttpResponse sendPost(String url, byte[] param, String contentType) throws IOException {

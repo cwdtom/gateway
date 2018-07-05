@@ -27,6 +27,7 @@ public class ConfigEnvironment {
     /**
      * 获取配置json
      *
+     * @param key key
      * @return json string
      */
     public String getChild(String key) {

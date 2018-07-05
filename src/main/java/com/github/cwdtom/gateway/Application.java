@@ -28,6 +28,7 @@ public class Application {
      * 启动方法
      *
      * @param args 参数
+     * @throws Exception 应用运行异常
      */
     public static void main(String[] args) throws Exception {
         Options options = new Options();

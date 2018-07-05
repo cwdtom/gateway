@@ -64,6 +64,10 @@ public class ConsulEnvironment {
      * 构造负载均衡
      *
      * @return 映射接口
+     * @throws NoSuchMethodException     方法不存在
+     * @throws IllegalAccessException    不允许访问
+     * @throws InvocationTargetException 调用方法异常
+     * @throws InstantiationException    初始化异常
      */
     public MappingEnvironment buildMapping() throws NoSuchMethodException, IllegalAccessException,
             InvocationTargetException, InstantiationException {
