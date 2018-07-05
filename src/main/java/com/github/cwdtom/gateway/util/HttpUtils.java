@@ -47,6 +47,7 @@ public class HttpUtils {
      * @param param       数据
      * @param contentType 数据类型
      * @return 响应结果
+     * @throws IOException 请求异常
      */
     public static FullHttpResponse sendPost(String url, byte[] param, String contentType) throws IOException {
         Request request = new Request.Builder()
