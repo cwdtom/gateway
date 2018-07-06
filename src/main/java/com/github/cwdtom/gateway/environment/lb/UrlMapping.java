@@ -18,7 +18,7 @@ public class UrlMapping implements MappingEnvironment {
     /**
      * 映射表
      */
-    Map<String, List<Mapper>> mapping;
+    protected Map<String, List<Mapper>> mapping;
 
     UrlMapping(Map<String, List<Mapper>> mapping) {
         this.mapping = mapping;
