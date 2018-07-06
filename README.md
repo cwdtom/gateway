@@ -139,10 +139,10 @@
 
 ## REFORM
 
-- 负载均衡算法：可以自定义算法，算法类需要继承UrlMapping类并且实现MappingEnvironment接口。父类UrlMapping含有映射表成员变量mapping。
+- 负载均衡算法：可以自定义算法，算法类需要继承UrlMapping类。父类UrlMapping含有映射表成员变量mapping。
 
     ```java
-    public class RandomLoadBalance extends UrlMapping implements MappingEnvironment {
+    public class RandomLoadBalance extends UrlMapping {
         @Override
         public Mapper getLoadBalance(String host, String ip) {
             // do something

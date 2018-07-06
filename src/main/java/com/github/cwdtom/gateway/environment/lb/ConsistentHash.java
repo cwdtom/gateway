@@ -1,7 +1,6 @@
 package com.github.cwdtom.gateway.environment.lb;
 
 import com.github.cwdtom.gateway.constant.LoadBalanceConstant;
-import com.github.cwdtom.gateway.environment.MappingEnvironment;
 import com.github.cwdtom.gateway.mapping.Mapper;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,7 +14,7 @@ import java.util.*;
  * @since 2.1.0
  */
 @Slf4j
-public class ConsistentHash extends UrlMapping implements MappingEnvironment {
+public class ConsistentHash extends UrlMapping {
     /**
      * hash环
      */

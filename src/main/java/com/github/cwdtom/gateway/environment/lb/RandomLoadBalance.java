@@ -1,6 +1,5 @@
 package com.github.cwdtom.gateway.environment.lb;
 
-import com.github.cwdtom.gateway.environment.MappingEnvironment;
 import com.github.cwdtom.gateway.mapping.Mapper;
 import lombok.extern.slf4j.Slf4j;
 
@@ -15,7 +14,7 @@ import java.util.Random;
  * @since 2.1.0
  */
 @Slf4j
-public class RandomLoadBalance extends UrlMapping implements MappingEnvironment {
+public class RandomLoadBalance extends UrlMapping {
     /**
      * 随机数对象
      */
