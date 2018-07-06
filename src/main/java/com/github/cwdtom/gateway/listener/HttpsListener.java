@@ -89,14 +89,8 @@ public class HttpsListener implements Runnable {
         bootstrap.option(ChannelOption.SO_BACKLOG, 1024);
         bootstrap.childHandler(new ChannelInitializer<SocketChannel>() {
             @Override
-            protected void initChannel(SocketChannel socketChannel) {
-                SSLEngine sslEngine = null;
-                try {
-                    sslEngine = sslContext(env.getKeyPwd(), env.getKeyPath()).createSSLEngine();
-                } catch (Exception e) {
-                    log.error("ssl key file exception.", e);
-                    System.exit(1);
-                }
+            protected void initChannel(SocketChannel socketChannel) throws Exception {
+                SSLEngine sslEngine = sslContext(env.getKeyPwd(), env.getKeyPath()).createSSLEngine();
                 sslEngine.setUseClientMode(false);
                 ChannelPipeline p = socketChannel.pipeline();
                 p.addLast(new SslHandler(sslEngine));

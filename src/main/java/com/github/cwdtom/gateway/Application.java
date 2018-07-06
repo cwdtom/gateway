@@ -13,6 +13,7 @@ import com.github.cwdtom.gateway.util.ConsoleUtils;
 import eu.medsea.mimeutil.MimeUtil;
 import org.apache.commons.cli.*;
 
+import java.io.FileNotFoundException;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -40,19 +41,18 @@ public class Application {
         if (cmd.hasOption(ConsoleConstant.COMMAND_HELP)) {
             HelpFormatter formatter = new HelpFormatter();
             formatter.printHelp("ant", options);
-            System.exit(0);
+            return;
         } else if (cmd.hasOption(ConsoleConstant.COMMAND_VERSION)) {
             System.out.println("version: " + ConsoleUtils.getVersion());
-            System.exit(0);
+            return;
         }
 
-        ApplicationContext ac = null;
+        ApplicationContext ac;
         if (cmd.hasOption(ConsoleConstant.COMMAND_CONFIG)) {
             // 初始化上下文
             ac = new ApplicationContext(cmd.getOptionValue(ConsoleConstant.COMMAND_CONFIG));
         } else {
-            System.out.println("config file path arg is not found.");
-            System.exit(1);
+            throw new FileNotFoundException("config file path arg is not found.");
         }
 
         // 初始化服务线程池

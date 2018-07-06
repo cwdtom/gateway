@@ -8,8 +8,8 @@ import com.github.cwdtom.gateway.util.ContextUtils;
 import io.netty.util.ResourceLeakDetector;
 import org.slf4j.LoggerFactory;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Map;
@@ -27,18 +27,16 @@ public final class ApplicationContext {
      */
     private final Map<Class, Object> context = new ConcurrentHashMap<>();
 
-    public ApplicationContext(String filePath) throws ClassNotFoundException, InvocationTargetException,
-            NoSuchMethodException, InstantiationException, IllegalAccessException {
+    public ApplicationContext(String filePath) throws Exception {
         // 关闭内存泄漏检测
         ResourceLeakDetector.setLevel(ResourceLeakDetector.Level.DISABLED);
-        ConfigEnvironment config = null;
+        ConfigEnvironment config;
         try {
             String json = new String(Files.readAllBytes(Paths.get(filePath)));
             config = new ConfigEnvironment(json);
             context.put(ConfigEnvironment.class, config);
         } catch (IOException e) {
-            System.out.println("config file is not found.");
-            System.exit(1);
+            throw new FileNotFoundException("config file is not found.");
         }
         if (!config.isDevelop()) {
             // 如果不是开发者模式，提高日志等级
