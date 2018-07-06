@@ -25,7 +25,7 @@ public class UrlMapping implements MappingEnvironment {
     }
 
     @Override
-    public Map<String, List<Mapper>> get() {
+    public final Map<String, List<Mapper>> get() {
         return mapping;
     }
 

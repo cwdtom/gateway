@@ -4,6 +4,7 @@ import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
 import com.github.cwdtom.gateway.thread.ThreadPoolGroup;
+import com.github.cwdtom.gateway.util.ContextUtils;
 import io.netty.util.ResourceLeakDetector;
 import org.slf4j.LoggerFactory;
 
@@ -49,7 +50,7 @@ public final class ApplicationContext {
         context.put(FlowLimitsEnvironment.class, new FlowLimitsEnvironment(config));
         context.put(HttpEnvironment.class, new HttpEnvironment(config));
         context.put(HttpsEnvironment.class, new HttpsEnvironment(config));
-        MappingEnvironment mappingEnv = MappingEnvironment.buildMappingEnvironment(config);
+        MappingEnvironment mappingEnv = ContextUtils.buildMappingEnvironment(config);
         context.put(MappingEnvironment.class, mappingEnv);
         StaticEnvironment staticEnv = new StaticEnvironment(config);
         context.put(StaticEnvironment.class, staticEnv);
@@ -58,6 +59,7 @@ public final class ApplicationContext {
         ConsulEnvironment consul = new ConsulEnvironment(config);
         context.put(ConsulEnvironment.class, consul);
         if (consul.isEnable()) {
+            // 重建mapping
             context.put(MappingEnvironment.class, consul.buildMapping());
         }
     }
