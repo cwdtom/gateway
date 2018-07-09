@@ -16,15 +16,15 @@ public class StaticEnvironment {
     /**
      * 路径映射表
      */
-    private Map<String, String> pathMapping;
+    private Map<String, String> pathMapping = new HashMap<>();
 
     StaticEnvironment(ConfigEnvironment config) {
         JSONObject obj = JSON.parseObject(config.getChild("static"));
-        Map<String, String> map = new HashMap<>(obj.size() / 3 * 4);
-        for (Map.Entry<String, Object> entry : obj.entrySet()) {
-            map.put(entry.getKey(), (String) entry.getValue());
+        if (obj != null) {
+            for (Map.Entry<String, Object> entry : obj.entrySet()) {
+                pathMapping.put(entry.getKey(), (String) entry.getValue());
+            }
         }
-        pathMapping = map;
     }
 
     /**

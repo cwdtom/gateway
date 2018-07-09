@@ -45,15 +45,19 @@ public class ConsulEnvironment {
 
     ConsulEnvironment(ConfigEnvironment config) throws ClassNotFoundException {
         JSONObject obj = JSON.parseObject(config.getChild("consul"));
-        enable = obj.getBoolean("enable");
-        client = new ConsulClient(obj.getString("host"));
-        JSONObject mapping = obj.getJSONObject("mapping");
-        for (Map.Entry<String, Object> entry : mapping.entrySet()) {
-            JSONArray arr = (JSONArray) entry.getValue();
-            map.put(entry.getKey(), arr.toJavaList(String.class));
+        if (obj == null) {
+            enable = false;
+        } else {
+            enable = obj.getBoolean("enable");
+            client = new ConsulClient(obj.getString("host"));
+            JSONObject mapping = obj.getJSONObject("mapping");
+            for (Map.Entry<String, Object> entry : mapping.entrySet()) {
+                JSONArray arr = (JSONArray) entry.getValue();
+                map.put(entry.getKey(), arr.toJavaList(String.class));
+            }
+            JSONObject mappingObj = JSON.parseObject(config.getChild("mapping"));
+            clazz = Class.forName(mappingObj.getString("mode")).asSubclass(UrlMapping.class);
         }
-        JSONObject mappingObj = JSON.parseObject(config.getChild("mapping"));
-        clazz = Class.forName(mappingObj.getString("mode")).asSubclass(UrlMapping.class);
     }
 
     public boolean isEnable() {
