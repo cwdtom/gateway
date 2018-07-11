@@ -4,6 +4,7 @@ import com.github.cwdtom.gateway.constant.HttpConstant;
 import com.github.cwdtom.gateway.environment.ApplicationContext;
 import com.github.cwdtom.gateway.environment.ConsulEnvironment;
 import com.github.cwdtom.gateway.environment.MappingEnvironment;
+import com.github.cwdtom.gateway.environment.ZookeeperEnvironment;
 import com.github.cwdtom.gateway.util.HttpUtils;
 import lombok.extern.slf4j.Slf4j;
 
@@ -45,6 +46,7 @@ public class SurvivalCheck implements Runnable {
     @Override
     public void run() {
         ConsulEnvironment consul = context.getContext(ConsulEnvironment.class);
+        ZookeeperEnvironment zk = context.getContext(ZookeeperEnvironment.class);
         int count = 0;
         try {
             while (!Thread.currentThread().isInterrupted()) {
@@ -60,11 +62,17 @@ public class SurvivalCheck implements Runnable {
                     }
                 }
                 Thread.sleep(10000);
-                // 每隔100秒从consul重建映射
+                // 每隔100秒从consul或zk重建映射
                 count++;
-                if (count % 10 == 0 && consul.isEnable()) {
-                    context.setContext(MappingEnvironment.class, consul.buildMapping());
-                    mappers.clear();
+                if (count % 10 == 0) {
+                    if (consul.isEnable()) {
+                        context.setContext(MappingEnvironment.class, consul.buildMapping());
+                        mappers.clear();
+                    }
+                    if (zk.isEnable()) {
+                        context.setContext(MappingEnvironment.class, zk.buildMapping());
+                        mappers.clear();
+                    }
                 }
             }
         } catch (Exception e) {

@@ -60,6 +60,12 @@ public final class ApplicationContext {
             // 重建mapping
             context.put(MappingEnvironment.class, consul.buildMapping());
         }
+        ZookeeperEnvironment zk = new ZookeeperEnvironment(config);
+        context.put(ZookeeperEnvironment.class, zk);
+        if (zk.isEnable()) {
+            // 重建mapping
+            context.put(MappingEnvironment.class, zk.buildMapping());
+        }
     }
 
     /**
