@@ -171,7 +171,7 @@
     
 - 拦截器：可以自定义拦截器，拦截类需要实现BeforeFilter或AfterFilter接口。
 
-    1. 前置拦截器，返回是否继续执行。
+    - 前置拦截器，返回是否继续执行。
     
     ```java
     public class TestFilter implements BeforeFilter {
@@ -183,7 +183,7 @@
     }
     ```
     
-    1. 后置拦截器。
+    - 后置拦截器。
     
     ```java
     public class TestFilter implements AfterFilter {  

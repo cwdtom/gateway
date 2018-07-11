@@ -171,7 +171,7 @@ Download [the latest release](https://github.com/cwdtom/gateway/releases/downloa
     
 - filter:Support customize filter.Filter class need implements BeforeFilter interface or AfterFilter interface.
 
-    1. pre filter,return whether continue or not.
+    - pre filter,return whether continue or not.
     
     ```java
     public class TestFilter implements BeforeFilter {
@@ -183,7 +183,7 @@ Download [the latest release](https://github.com/cwdtom/gateway/releases/downloa
     }
     ```
     
-    1. post filter.
+    - post filter.
     
     ```java
     public class TestFilter implements AfterFilter {  
