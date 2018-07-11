@@ -1,6 +1,6 @@
 # Gateway
 
-![Version](https://img.shields.io/badge/version-3.0.2-green.svg)
+![Version](https://img.shields.io/badge/version-3.1.0-green.svg)
 [![Build Status](https://travis-ci.org/cwdtom/gateway.svg?branch=master)](https://travis-ci.org/cwdtom/gateway)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](http://opensource.org/licenses/MIT)
 
@@ -18,10 +18,11 @@
 1. 在linux下采用epoll其他系统采用nio
 1. 静态文件映射
 1. 支持consul自动服务发现，启用后原mapping配置失效，每个节点拥有相同的权重
+1. 支持zookeeper自动服务发现，启用后原mapping配置失效，每个节点拥有相同的权重，zk优先级高于consul
 1. 开发者模式输出详细日志，生产环境时只输出warn及以上
 
 ## Download
-下载最[新版本JAR包](https://github.com/cwdtom/gateway/releases/download/3.0.1/gateway-3.0.1.jar)
+下载最[新版本JAR包](https://github.com/cwdtom/gateway/releases/download/3.1.0/gateway-3.1.0.jar)
 
 ## Usage
 
@@ -96,7 +97,16 @@
             "localhost:8080"
           ]
         }
-      }
+      },
+      "zk": {
+        "enable": true,
+        "host": "127.0.0.1:2181",
+        "mapping": {
+          "test": [
+            "localhost:8080"
+          ]
+        }
+     }
     }
     ```
     1. mode: 运行模式，不为dev或缺省时，日志只输出warn及以上
@@ -133,6 +143,12 @@
     1. consul: consul注册中心配置
         1. enable: 是否启用，启用后原mapping配置失效
         1. host: consul地址
+        1. mapping: 服务映射
+            1. key: service名字 spring.application.name
+            1. value: host列表
+    1. zk: zookeeper注册中心配置
+        1. enable: 是否启用，启用后原mapping配置失效
+        1. host: zookeeper地址
         1. mapping: 服务映射
             1. key: service名字 spring.application.name
             1. value: host列表

@@ -57,12 +57,12 @@ public class HttpsListener implements Runnable {
             boss = new EpollEventLoopGroup();
             worker = new EpollEventLoopGroup();
             channelClass = EpollServerSocketChannel.class;
-            log.info("http listener used epoll model");
+            log.info("https listener used epoll model");
         } else {
             boss = new NioEventLoopGroup();
             worker = new NioEventLoopGroup();
             channelClass = NioServerSocketChannel.class;
-            log.info("http listener used nio model");
+            log.info("https listener used nio model");
         }
     }
 
