@@ -5,34 +5,35 @@
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](http://opensource.org/licenses/MIT)
 
 ## Overview
-- 基于netty和okHttp的反向代理网关
-1. 支持http协议
-1. 支持https协议
-1. 支持cors协议
-1. 支持基于本地令牌桶的限流
-1. 相对独立的线程池
-1. 负载均衡采用 
-    1. RandomLoadBalance 随机负载均衡算法
-    1. ConsistentHash 一致性hash算法
-1. 支持熔断不可用服务，并在单独线程中进行重试，成功以后重新设置为可用
-1. 在linux下采用epoll其他系统采用nio
-1. 静态文件映射
-1. 支持consul自动服务发现，启用后原mapping配置失效，每个节点拥有相同的权重
-1. 支持zookeeper自动服务发现，启用后原mapping配置失效，每个节点拥有相同的权重，zk优先级高于consul
-1. 开发者模式输出详细日志，生产环境时只输出warn及以上
+- API proxy gateway base on netty and okHttp.
+1. Support http protocol.
+1. Support https protocol.
+1. Support cors protocol.
+1. Support local flow limits base on token bucket.
+1. Every proxy has independent thread pool.
+1. Load balance
+    1. RandomLoadBalance
+    1. ConsistentHash
+1. Support fuse service which is offline,then retest service in single thread,when it is reachable,take it online.
+1. Use epoll model in Linux,other uses nio model.
+1. Static file mapping.
+1. Support consul auto service discovery.if it is enable,origin mapping config will be failure,every node has same weight.
+1. Support zookeeper auto service discovery.If it is enable,origin mapping config will be failure,every node has same weight,zk priority is higher than consul.
+1. Print detail log in developer mode,and print log which level is higher than 'warn' in production environment.
 
 ## Download
-下载最[新版本JAR包](https://github.com/cwdtom/gateway/releases/download/3.1.0/gateway-3.1.0.jar)
+
+Download [the latest release](https://github.com/cwdtom/gateway/releases/download/3.1.0/gateway-3.1.0.jar)
 
 ## Usage
 
-- 启动jar包
+- start jar package
     ```shell
     java -jar gateway.jar -c /root/config.json
     ```
-    1. -v 显示版本号
-    1. -c 指定json配置文件
-    1. -h 显示帮助中心
+    1. -v version
+    1. -c json config file path
+    1. -h show help info
     
 - config.json
     ```json
@@ -109,53 +110,55 @@
      }
     }
     ```
-    1. mode: 运行模式，不为dev或缺省时，日志只输出warn及以上
-    1. http: http相关配置
-        1. port: 端口号
-        1. redirectHttps: 是否重定向至https
-    1. https: https相关配置
-        1. enable: 是否开启
-        1. port: 端口号
-        1. keyPwd: 证书密码
-        1. keyPath: 证书路径
-    1. threadPool: 单个反射配置的线程池配置
-        1. core: 核心线程数量
-        1. max: 最大线程数量
-        1. timeout: 超时时间
-    1. mapping: 映射配置，每个host对应多个反向代理地址
-        1. mode: 负载均衡算法，默认为RandomLoadBalance
-        1. list: 映射表
-            1. url: 反向代理地址
-            1. weight: 权重
-    1. static: 静态文件映射
-        1. key host地址
-        1. value 本地映射文件夹
-    1. cors: 跨域相关配置
-        1. enable: 是否开启跨域
-        1. whiteList: 跨域白名单，列表为空且开启跨域情况下为允许全部origin跨域请求
-    1. flowLimits: 限流配置
-        1. enable: 是否开启限流
-        1. rate: 令牌生产速率，单位ms
-        1. maxSize: 令牌桶大小
-    1. filter: 拦截器，拦截顺序按配置文件中的顺序执行
-        1. before: 前置拦截器
-        1. after: 后置连接器
-    1. consul: consul注册中心配置
-        1. enable: 是否启用，启用后原mapping配置失效
-        1. host: consul地址
-        1. mapping: 服务映射
-            1. key: service名字 spring.application.name
-            1. value: host列表
-    1. zk: zookeeper注册中心配置
-        1. enable: 是否启用，启用后原mapping配置失效
-        1. host: zookeeper地址
-        1. mapping: 服务映射
-            1. key: service名字 spring.application.name
-            1. value: host列表
+    1. mode: If it is not 'dev',only log level higher than 'warn' print.
+    1. http: http config.
+        1. port: http service port.
+        1. redirectHttps: Whether need redirect https or not.
+    1. https: https config.
+        1. enable: enable https service.
+        1. port: https service port.
+        1. keyPwd: SSL certificate password.
+        1. keyPath: SSL certificate file path.
+    1. threadPool: single proxy thread pool config.
+        1. core: core thread count.
+        1. max: max thread count.
+        1. timeout: thread pool timeout.
+    1. mapping: mapping config,every host mapping multiple proxy address.
+        1. mode: load balance algorithm,default RandomLoadBalance.
+        1. list: mapping list.
+            1. key: host.
+            1. value: proxy address list.
+                1. url: proxy address.
+                1. weight: weight.
+    1. static: static file mapping.
+        1. key: host.
+        1. value: local folder.
+    1. cors: cors config.
+        1. enable: enable cors.
+        1. whiteList: cors white list,when white list is empty and cors enable,allow all requested.
+    1. flowLimits: flow limits config.
+        1. enable: enable flow limits.
+        1. rate: token production rate,unit millisecond.
+        1. maxSize: token bucket size.
+    1. filter: request filter,the execution order is same as this config.
+        1. before: pre filter.
+        1. after: post filter.
+    1. consul: consul config.
+        1. enable: enable consul,if enable origin mapping will be failure.
+        1. host: consul address.
+        1. mapping: service mapping.
+            1. key: service name(spring.application.name).
+            1. value: host list
+    1. zk: zookeeper config
+        1. enable: enable zookeeper,if enable origin mapping will be failure.
+        1. host: zookeeper address
+        1. mapping: service mapping.
+            1. key: service name(spring.application.name).
+            1. value: host list
 
-## REFORM
+## CUSTOMIZE
 
-- 负载均衡算法：可以自定义算法，算法类需要继承UrlMapping类。父类UrlMapping含有映射表成员变量mapping。
+- Load balance algorithm:Support customize algorithm.Algorithm class need extends UrlMapping class.Father class has proxy mapping map variable.
 
     ```java
     public class RandomLoadBalance extends UrlMapping {
@@ -166,9 +169,9 @@
     }
     ```
     
-- 拦截器：可以自定义拦截器，拦截类需要实现BeforeFilter或AfterFilter接口
+- filter:Support customize filter.Filter class need implements BeforeFilter interface or AfterFilter interface.
 
-    1. 前置拦截器，返回是否继续执行
+    1. pre filter,return whether continue or not.
     
     ```java
     public class TestFilter implements BeforeFilter {
@@ -180,7 +183,7 @@
     }
     ```
     
-    1. 后置拦截器
+    1. post filter.
     
     ```java
     public class TestFilter implements AfterFilter {  
