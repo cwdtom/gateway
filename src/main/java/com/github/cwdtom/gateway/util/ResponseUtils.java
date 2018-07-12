@@ -15,17 +15,17 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 响应工具
+ * build response utils
  *
  * @author chenweidong
  * @since 1.0.0
  */
 public class ResponseUtils {
     /**
-     * 构造失败响应
+     * build fail response
      *
-     * @param status 状态码
-     * @return 失败响应
+     * @param status http status
+     * @return response
      */
     public static FullHttpResponse buildFailResponse(HttpResponseStatus status) {
         FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, status);
@@ -34,11 +34,11 @@ public class ResponseUtils {
     }
 
     /**
-     * 构造响应
+     * build response
      *
-     * @param resp 响应内容
-     * @return 响应
-     * @throws IOException 网络异常
+     * @param resp okhttp http response
+     * @return netty http response
+     * @throws IOException network error
      */
     public static FullHttpResponse buildResponse(Response resp) throws IOException {
         try {
@@ -62,12 +62,12 @@ public class ResponseUtils {
     }
 
     /**
-     * 构造响应
+     * build response
      *
-     * @param file    文件
-     * @param version http版本
-     * @return 响应
-     * @throws IOException 文件读取异常
+     * @param file    local file
+     * @param version http version
+     * @return response
+     * @throws IOException read local file error
      */
     public static FullHttpResponse buildResponse(File file, HttpVersion version) throws IOException {
         FullHttpResponse response = new DefaultFullHttpResponse(version, HttpResponseStatus.OK,
@@ -79,10 +79,10 @@ public class ResponseUtils {
     }
 
     /**
-     * 构造重定向响应
+     * build redirect response
      *
-     * @param host 重定向host
-     * @return 响应
+     * @param host redirect host
+     * @return response
      */
     public static FullHttpResponse buildRedirectResponse(String host) {
         byte[] content = String.format(HttpConstant.REDIRECT_TEMPLATE, HttpConstant.HTTPS_PREFIX + host).getBytes();
@@ -94,10 +94,10 @@ public class ResponseUtils {
     }
 
     /**
-     * 构造预校验响应体
+     * build options response
      *
-     * @param origin 跨域请求域名
-     * @return 响应
+     * @param origin http origin host
+     * @return response
      */
     public static FullHttpResponse buildOptionsResponse(String origin) {
         FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK);

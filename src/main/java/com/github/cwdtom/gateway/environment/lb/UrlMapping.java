@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * url映射对象
+ * url mapping
  *
  * @author chenweidong
  * @since 2.1.0
@@ -16,7 +16,7 @@ import java.util.Map;
 @Slf4j
 public class UrlMapping implements MappingEnvironment {
     /**
-     * 映射表
+     * mapping map
      */
     protected Map<String, List<Mapper>> mapping;
 
@@ -30,7 +30,7 @@ public class UrlMapping implements MappingEnvironment {
     }
 
     /**
-     * 默认方法需要重写
+     * default method,need override
      */
     @Override
     public Mapper getLoadBalance(String host, String ip) {

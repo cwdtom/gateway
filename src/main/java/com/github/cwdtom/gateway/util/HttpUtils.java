@@ -10,14 +10,14 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
- * HTTP工具
+ * http request utils
  *
  * @author chenweidong
  * @since 1.0.0
  */
 public class HttpUtils {
     /**
-     * client
+     * okhttp client
      */
     private static final OkHttpClient CLIENT;
 
@@ -28,17 +28,17 @@ public class HttpUtils {
                 .writeTimeout(60, TimeUnit.SECONDS)
                 .retryOnConnectionFailure(true)
                 .build();
-        // 去除并发数限制
+        // remove concurrency restrictions
         CLIENT.dispatcher().setMaxRequestsPerHost(Integer.MAX_VALUE);
     }
 
     /**
-     * 发送GET请求
+     * send get request
      *
-     * @param url     目标URL
-     * @param headers 请求头
-     * @return 响应结果
-     * @throws IOException 请求异常
+     * @param url     target url
+     * @param headers http headers
+     * @return response
+     * @throws IOException network error
      */
     public static FullHttpResponse sendGet(String url, HttpHeaders headers) throws IOException {
         Request request = buildRequestHeader(headers).get().url(url).build();
@@ -47,11 +47,11 @@ public class HttpUtils {
     }
 
     /**
-     * 发送GET请求
+     * send get request
      *
-     * @param url 目标URL
-     * @return 响应结果
-     * @throws IOException 请求异常
+     * @param url target url
+     * @return response
+     * @throws IOException network error
      */
     public static FullHttpResponse sendGet(String url) throws IOException {
         Request request = new Request.Builder()
@@ -64,13 +64,13 @@ public class HttpUtils {
     }
 
     /**
-     * 发送POST请求
+     * send post request
      *
-     * @param url     目标URL
-     * @param param   数据
-     * @param headers 请求头
-     * @return 响应结果
-     * @throws IOException 请求异常
+     * @param url     target url
+     * @param param   http content
+     * @param headers http headers
+     * @return response
+     * @throws IOException network error
      */
     public static FullHttpResponse sendPost(String url, byte[] param, HttpHeaders headers) throws IOException {
         String contentType = headers.get(HttpHeaderNames.CONTENT_TYPE);
@@ -86,12 +86,12 @@ public class HttpUtils {
     }
 
     /**
-     * 发送head请求
+     * send head request
      *
-     * @param url     目标url
-     * @param headers 请求头
-     * @return 响应结果
-     * @throws IOException 请求异常
+     * @param url     target url
+     * @param headers http headers
+     * @return response
+     * @throws IOException network error
      */
     public static FullHttpResponse sendHead(String url, HttpHeaders headers) throws IOException {
         Request request = buildRequestHeader(headers).head().url(url).build();
@@ -100,13 +100,13 @@ public class HttpUtils {
     }
 
     /**
-     * 发送put请求
+     * send put request
      *
-     * @param url     目标URL
-     * @param param   数据
-     * @param headers 请求头
-     * @return 响应结果
-     * @throws IOException 请求异常
+     * @param url     target url
+     * @param param   http content
+     * @param headers http headers
+     * @return response
+     * @throws IOException network error
      */
     public static FullHttpResponse sendPut(String url, byte[] param, HttpHeaders headers) throws IOException {
         String contentType = headers.get(HttpHeaderNames.CONTENT_TYPE);
@@ -122,13 +122,13 @@ public class HttpUtils {
     }
 
     /**
-     * 发送patch请求
+     * send patch request
      *
-     * @param url     目标URL
-     * @param param   数据
-     * @param headers 请求头
-     * @return 响应结果
-     * @throws IOException 请求异常
+     * @param url     target url
+     * @param param   http content
+     * @param headers http headers
+     * @return response
+     * @throws IOException network error
      */
     public static FullHttpResponse sendPatch(String url, byte[] param, HttpHeaders headers) throws IOException {
         String contentType = headers.get(HttpHeaderNames.CONTENT_TYPE);
@@ -144,13 +144,13 @@ public class HttpUtils {
     }
 
     /**
-     * 发送delete请求
+     * send delete request
      *
-     * @param url     目标URL
-     * @param param   数据
-     * @param headers 请求头
-     * @return 响应结果
-     * @throws IOException 请求异常
+     * @param url     target url
+     * @param param   http content
+     * @param headers http headers
+     * @return response
+     * @throws IOException network error
      */
     public static FullHttpResponse sendDelete(String url, byte[] param, HttpHeaders headers) throws IOException {
         String contentType = headers.get(HttpHeaderNames.CONTENT_TYPE);
@@ -166,17 +166,17 @@ public class HttpUtils {
     }
 
     /**
-     * 构造请求头
+     * build http headers
      *
-     * @param headers 请求头
-     * @return 请求构造器
+     * @param headers netty http headers
+     * @return okhttp request builder
      */
     private static Request.Builder buildRequestHeader(HttpHeaders headers) {
         Request.Builder builder = new Request.Builder();
         for (Map.Entry<String, String> entry : headers.entries()) {
             builder.addHeader(entry.getKey(), entry.getValue());
         }
-        // 单独设置保持长连
+        // set connection keep-alive
         builder.header("connection", "Keep-Alive");
         return builder;
     }

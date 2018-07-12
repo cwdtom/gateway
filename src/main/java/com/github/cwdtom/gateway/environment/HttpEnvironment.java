@@ -3,18 +3,18 @@ package com.github.cwdtom.gateway.environment;
 import com.alibaba.fastjson.JSONObject;
 
 /**
- * http环境
+ * http environment
  *
  * @author chenweidong
  * @since 1.0.0
  */
 public class HttpEnvironment {
     /**
-     * 端口号
+     * port
      */
     private int port;
     /**
-     * 是否重定向至https
+     * redirect https or not
      */
     private boolean redirectHttps;
 

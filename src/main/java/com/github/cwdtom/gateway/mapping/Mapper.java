@@ -5,7 +5,7 @@ import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * 映射器
+ * proxy mapper
  *
  * @author chenweidong
  * @since 1.4.0
@@ -18,22 +18,22 @@ public class Mapper {
      */
     private String host;
     /**
-     * 权重
+     * weight
      */
     private int weight;
     /**
-     * 异常次数
+     * exception count
      */
     private int exceptionCount;
     /**
-     * 目标url
+     * target url
      */
     private String target;
 
     public Mapper(String host, String target, Integer weight) {
         this.host = host;
         this.target = target;
-        // 无权重时默认值100
+        // weight default 100
         this.weight = weight == null || weight < 0 ? 100 : weight;
         this.exceptionCount = 0;
     }
@@ -51,16 +51,16 @@ public class Mapper {
     }
 
     /**
-     * 目标代理异常
+     * target service unreachable
      *
-     * @return 异常目标url
+     * @return error service
      */
     public String exception() {
         this.exceptionCount++;
         if (!isOnline()) {
             log.error("{} offline.", target);
-            // 放入存活检查列条
-            SurvivalCheck.add(this);
+            // put it to survival check list
+            SurvivalChecker.add(this);
         }
         return target;
     }
@@ -80,9 +80,9 @@ public class Mapper {
     }
 
     /**
-     * 检查是否健康
+     * check for mapper health
      *
-     * @return 是否健康
+     * @return online or offline
      */
     public boolean isOnline() {
         return exceptionCount < LoadBalanceConstant.OFFLINE_COUNT;

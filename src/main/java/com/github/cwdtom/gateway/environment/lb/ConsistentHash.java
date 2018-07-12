@@ -8,7 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.*;
 
 /**
- * 一致性hash算法
+ * consistent hash
  *
  * @author chenweidong
  * @since 2.1.0
@@ -16,13 +16,13 @@ import java.util.*;
 @Slf4j
 public class ConsistentHash extends UrlMapping {
     /**
-     * hash环
+     * hash circle
      */
     private Map<String, Node> hashLoop;
 
     public ConsistentHash(Map<String, List<Mapper>> urlMapping) {
         super(urlMapping);
-        // 生成hash环
+        // build hash circle
         for (Map.Entry<String, List<Mapper>> entry : urlMapping.entrySet()) {
             List<Mapper> mappers = entry.getValue();
             int sum = 0;
@@ -33,7 +33,7 @@ public class ConsistentHash extends UrlMapping {
             for (Mapper mapper : mappers) {
                 int count = LoadBalanceConstant.MAX_NODE_SIZE * mapper.getWeight() / sum;
                 StringBuilder sb = new StringBuilder(mapper.getTarget()).append("#");
-                // 确保最少拥有一个节点
+                // ensure it contains one node
                 if (count < 1) {
                     count = 1;
                 }
@@ -42,7 +42,7 @@ public class ConsistentHash extends UrlMapping {
                     nodes.add(new Node(mapper, hashCode));
                 }
             }
-            // 排序
+            // sort
             Collections.sort(nodes);
 
             Map<String, Node> hashLoop = new HashMap<>(urlMapping.size() / 3 * 4);
@@ -89,12 +89,12 @@ public class ConsistentHash extends UrlMapping {
     }
 
     /**
-     * 节点
+     * node
      */
     @NoArgsConstructor
     private class Node implements Comparable<Node> {
         /**
-         * 映射对象
+         * mapper
          */
         private Mapper mapper;
         /**
@@ -102,11 +102,11 @@ public class ConsistentHash extends UrlMapping {
          */
         private Integer hashCode;
         /**
-         * 后置节点
+         * post node
          */
         private Node next;
         /**
-         * 前置节点
+         * pre node
          */
         private Node prev;
 

@@ -7,18 +7,18 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * 静态文件配置
+ * local file environment
  *
  * @author chenweidong
- * @since 1.7.0
+ * @since 3.1.1
  */
-public class StaticEnvironment {
+public class LocalFileEnvironment {
     /**
-     * 路径映射表
+     * file path mapping map
      */
     private Map<String, String> pathMapping = new HashMap<>();
 
-    StaticEnvironment(ConfigEnvironment config) {
+    LocalFileEnvironment(ConfigEnvironment config) {
         JSONObject obj = JSON.parseObject(config.getChild("static"));
         if (obj != null) {
             for (Map.Entry<String, Object> entry : obj.entrySet()) {
@@ -28,19 +28,19 @@ public class StaticEnvironment {
     }
 
     /**
-     * 获取静态文件映射路径
+     * get local file path
      *
      * @param host host
-     * @return 路径
+     * @return file path
      */
     public String getPath(String host) {
         return pathMapping.get(host);
     }
 
     /**
-     * 获取映射表
+     * get mapping map
      *
-     * @return 映射表
+     * @return mapping map
      */
     public Map<String, String> get() {
         return pathMapping;

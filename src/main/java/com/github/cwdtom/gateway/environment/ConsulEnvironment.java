@@ -12,14 +12,13 @@ import com.github.cwdtom.gateway.mapping.Mapper;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
 /**
- * consul配置
+ * consul config
  *
  * @author chenweidong
  * @since 3.0.0
@@ -27,19 +26,19 @@ import java.util.Vector;
 @Slf4j
 public class ConsulEnvironment {
     /**
-     * 是否启用
+     * enable
      */
     private boolean enable;
     /**
-     * consul客户端
+     * consul client
      */
     private ConsulClient client;
     /**
-     * server映射host
+     * server mapping host
      */
     private Map<String, List<String>> map = new HashMap<>();
     /**
-     * 算法class
+     * algorithms class
      */
     private Class<? extends UrlMapping> clazz;
 
@@ -67,16 +66,12 @@ public class ConsulEnvironment {
     }
 
     /**
-     * 构造负载均衡
+     * build load balance
      *
-     * @return 映射接口
-     * @throws NoSuchMethodException     方法不存在
-     * @throws IllegalAccessException    不允许访问
-     * @throws InvocationTargetException 调用方法异常
-     * @throws InstantiationException    初始化异常
+     * @return mapping environment
+     * @throws Exception build error
      */
-    public MappingEnvironment buildMapping() throws NoSuchMethodException, IllegalAccessException,
-            InvocationTargetException, InstantiationException {
+    public MappingEnvironment buildMapping() throws Exception {
         log.info("consul service discovery, rebuild load balance.");
         Response<List<HealthService>> response = client.getHealthServices("test",
                 true, QueryParams.DEFAULT);

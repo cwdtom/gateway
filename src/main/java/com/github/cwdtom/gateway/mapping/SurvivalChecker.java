@@ -14,30 +14,30 @@ import java.util.Iterator;
 import java.util.Set;
 
 /**
- * 存活检查
+ * survival checker
  *
  * @author chenweidong
  * @since 1.4.0
  */
 @Slf4j
-public class SurvivalCheck implements Runnable {
+public class SurvivalChecker implements Runnable {
     /**
-     * 熔断mapper列表
+     * error mapper list
      */
     private static Set<Mapper> mappers = new HashSet<>();
     /**
-     * 应用上下文
+     * application context
      */
     private ApplicationContext context;
 
-    public SurvivalCheck(ApplicationContext context) {
+    public SurvivalChecker(ApplicationContext context) {
         this.context = context;
     }
 
     /**
-     * 添加已熔断mapper
+     * add error mapper
      *
-     * @param mapper mapper
+     * @param mapper error mapper
      */
     public static void add(Mapper mapper) {
         mappers.add(mapper);
@@ -55,14 +55,14 @@ public class SurvivalCheck implements Runnable {
                     Mapper m = iterator.next();
                     try {
                         HttpUtils.sendGet(HttpConstant.HTTP_PREFIX + m.getTarget());
-                        // 服务恢复
+                        // restore mapper
                         m.setExceptionCount(0);
                         iterator.remove();
                     } catch (IOException ignored) {
                     }
                 }
                 Thread.sleep(10000);
-                // 每隔100秒从consul或zk重建映射
+                // rebuild all mapper each 100-second from zk or consul.
                 count++;
                 if (count % 10 == 0) {
                     if (consul.isEnable()) {

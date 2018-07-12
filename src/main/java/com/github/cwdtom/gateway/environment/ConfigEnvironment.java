@@ -1,14 +1,14 @@
 package com.github.cwdtom.gateway.environment;
 
 import com.alibaba.fastjson.JSONObject;
-import com.github.cwdtom.gateway.constant.Constant;
+import com.github.cwdtom.gateway.constant.SystemConstant;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * 配置环境
+ * config environment
  *
  * @author chenweidong
  * @since 1.0.0
@@ -16,16 +16,16 @@ import java.util.Map;
 @Slf4j
 public class ConfigEnvironment {
     /**
-     * 配置json对象
+     * config json map
      */
     private Map<String, String> config;
     /**
-     * 是否是开发环境
+     * develop environment or not
      */
     private boolean isDevelop;
 
     /**
-     * 获取配置json
+     * get config json string
      *
      * @param key key
      * @return json string
@@ -34,11 +34,6 @@ public class ConfigEnvironment {
         return config.get(key);
     }
 
-    /**
-     * 创建配置文件环境
-     *
-     * @param json json string
-     */
     ConfigEnvironment(String json) {
         JSONObject obj = JSONObject.parseObject(json);
         Map<String, String> map = new HashMap<>(obj.size() / 3 * 4);
@@ -47,7 +42,7 @@ public class ConfigEnvironment {
         }
         config = map;
         Object o = map.get("mode");
-        this.isDevelop = o != null && o.toString().equals(Constant.DEVELOP);
+        this.isDevelop = o != null && o.toString().equals(SystemConstant.DEVELOP);
     }
 
     public boolean isDevelop() {

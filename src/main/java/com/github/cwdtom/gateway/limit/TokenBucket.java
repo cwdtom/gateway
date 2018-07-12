@@ -3,32 +3,27 @@ package com.github.cwdtom.gateway.limit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * 令牌池
+ * token bucket
  *
  * @author chenweidong
  * @since 1.3.0
  */
 public class TokenBucket {
     /**
-     * 令牌数量
+     * token count
      */
     private AtomicInteger count = new AtomicInteger(0);
     /**
-     * 令牌桶大小
+     * token bucket size
      */
     private int maxSize;
 
-    /**
-     * 初始化
-     *
-     * @param maxSize 令牌桶大小
-     */
     public TokenBucket(int maxSize) {
         this.maxSize = maxSize;
     }
 
     /**
-     * 放入令牌
+     * put token to bucket
      */
     public void offer() {
         if (count.get() < maxSize) {
@@ -37,9 +32,9 @@ public class TokenBucket {
     }
 
     /**
-     * 获取令牌
+     * get token
      *
-     * @return 是否获取成功
+     * @return success or fail
      */
     public boolean take() {
         if (count.getAndDecrement() >= 0) {

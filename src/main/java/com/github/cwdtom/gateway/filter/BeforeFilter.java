@@ -3,18 +3,18 @@ package com.github.cwdtom.gateway.filter;
 import io.netty.handler.codec.http.FullHttpRequest;
 
 /**
- * 前置拦截器
+ * pre filter
  *
  * @author chenweidong
  * @since 2.2.0
  */
 public interface BeforeFilter {
     /**
-     * 过滤器
+     * filter
      *
-     * @param request 请求体
-     * @param content 内容
-     * @return 是否继续执行
+     * @param request netty http request
+     * @param content http request context
+     * @return continue or not
      */
     boolean filter(FullHttpRequest request, byte[] content);
 }

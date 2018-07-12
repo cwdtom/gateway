@@ -3,26 +3,26 @@ package com.github.cwdtom.gateway.environment;
 import com.alibaba.fastjson.JSONObject;
 
 /**
- * https环境
+ * https environment
  *
  * @author chenweidong
  * @since 1.0.0
  */
 public class HttpsEnvironment {
     /**
-     * 是否开启
+     * enable
      */
     private boolean enable;
     /**
-     * 端口号
+     * port
      */
     private int port;
     /**
-     * 证书密码
+     * certificate password
      */
     private String keyPwd;
     /**
-     * 证书文件路径
+     * certificate file path
      */
     private String keyPath;
 

@@ -111,7 +111,7 @@ Download [the latest release](https://github.com/cwdtom/gateway/releases/downloa
      }
     }
     ```
-    1. mode: If it is not 'dev',only log level higher than 'warn' print.
+    1. mode: If it is not 'dev',nothing but log level higher than 'warn' print and shutdown resource leak detector.
     1. http: http config.
         1. port: http service port.
         1. redirectHttps: Whether need redirect https or not.

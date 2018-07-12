@@ -15,7 +15,7 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- * 请求处理
+ * request handler
  *
  * @author chenweidong
  * @since 1.0.0
@@ -23,19 +23,19 @@ import java.io.IOException;
 @Slf4j
 public class RequestHandler implements Runnable {
     /**
-     * 应用上下文
+     * application context
      */
     private final ApplicationContext applicationContext;
     /**
-     * 信道
+     * channel
      */
     private Channel channel;
     /**
-     * 请求
+     * request
      */
     private FullHttpRequest request;
     /**
-     * 响应
+     * response
      */
     private FullHttpResponse response;
     /**
@@ -43,11 +43,11 @@ public class RequestHandler implements Runnable {
      */
     private String host;
     /**
-     * 是否是https请求
+     * https or http
      */
     private boolean isHttps;
     /**
-     * 请求体
+     * request content
      */
     private byte[] content;
 
@@ -65,7 +65,7 @@ public class RequestHandler implements Runnable {
     public void run() {
         Mapper mapper = null;
         try {
-            // 判断是否需要限流
+            // check for flow limits
             FlowLimitsEnvironment fle = applicationContext.getContext(FlowLimitsEnvironment.class);
             if (fle.isEnable() && !fle.getTokenBucket().take()) {
                 log.info("FLOW LIMIT {} {}.", host, request.uri());
@@ -74,11 +74,11 @@ public class RequestHandler implements Runnable {
             }
             String ip = channel.remoteAddress().toString().split(":")[0];
             mapper = applicationContext.getContext(MappingEnvironment.class).getLoadBalance(host, ip);
-            // 反向代理地址不存在
+            // mapper is not exist
             if (mapper == null) {
-                String path = applicationContext.getContext(StaticEnvironment.class).getPath(host);
+                String path = applicationContext.getContext(LocalFileEnvironment.class).getPath(host);
                 if (path != null) {
-                    // 返回静态资源 防止跨目录访问
+                    // return static resource,prevent cross directory access
                     path += request.uri().replace("/../", "/");
                     File file = new File(path);
                     if (file.exists() && file.isFile()) {
@@ -88,17 +88,17 @@ public class RequestHandler implements Runnable {
                 }
                 return;
             }
-            // 判断是否需要重定向至https
+            // redirect https host or not
             if (isHttps && applicationContext.getContext(HttpEnvironment.class).isRedirectHttps()) {
                 response = ResponseUtils.buildRedirectResponse(host);
                 return;
             }
-            // 判断解析是否成功
+            // decode success or fail
             if (request.decoderResult().isFailure()) {
                 response = ResponseUtils.buildFailResponse(HttpResponseStatus.BAD_REQUEST);
                 return;
             }
-            // 判断连接使用次数
+            // check for connection count
             if (HttpUtil.is100ContinueExpected(request)) {
                 response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.CONTINUE);
                 return;
@@ -128,9 +128,9 @@ public class RequestHandler implements Runnable {
     }
 
     /**
-     * 手动帮助释放资源
+     * help collect resource
      *
-     * @param isClose 释放关闭信道
+     * @param isClose release channel or not
      */
     public void release(boolean isClose) {
         if (isClose) {
@@ -144,14 +144,14 @@ public class RequestHandler implements Runnable {
     }
 
     /**
-     * 处理请求
+     * process request
      *
-     * @param mapping 映射地址
-     * @throws IOException 转发失败
+     * @param mapping target proxy host
+     * @throws IOException network error
      */
     private void process(String mapping) throws IOException {
         FilterEnvironment filter = applicationContext.getContext(FilterEnvironment.class);
-        // 前置过滤器
+        // pre filter
         if (!filter.beforeFilter(request, content)) {
             response = ResponseUtils.buildFailResponse(HttpResponseStatus.NOT_ACCEPTABLE);
             return;
@@ -189,18 +189,18 @@ public class RequestHandler implements Runnable {
                 // DELETE
                 response = HttpUtils.sendDelete(url, content, request.headers());
             } else {
-                // 不支持其他请求
+                // nonsupport others
                 response = ResponseUtils.buildFailResponse(HttpResponseStatus.BAD_REQUEST);
             }
         }
-        // 是否keep-alive
+        // keep-alive or not
         if (HttpUtil.isKeepAlive(request)) {
             response.headers().set(HttpHeaderNames.CONNECTION.toString(), HttpHeaderValues.KEEP_ALIVE.toString());
         } else {
             response.headers().set(HttpHeaderNames.CONNECTION.toString(), HttpHeaderValues.CLOSE.toString());
         }
 
-        // 后置过滤器
+        // post filter
         filter.afterFilter(response);
     }
 }

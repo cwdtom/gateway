@@ -10,33 +10,26 @@ import com.github.cwdtom.gateway.environment.lb.UrlMapping;
 import com.github.cwdtom.gateway.mapping.Mapper;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
 /**
- * 上下文工具
+ * application context utils
  *
  * @author chenweidong
  * @since 3.0.2
  */
 public class ContextUtils {
     /**
-     * 生成映射环境
+     * build mapping environment
      *
-     * @param config 配置
-     * @return 映射环境
-     * @throws ClassNotFoundException    class不存在
-     * @throws NoSuchMethodException     方法不存在
-     * @throws IllegalAccessException    没有调用权限
-     * @throws InvocationTargetException 调用目标方法异常
-     * @throws InstantiationException    初始化异常
+     * @param config json config
+     * @return mapping environment
+     * @throws Exception build error
      */
-    public static MappingEnvironment buildMappingEnvironment(ConfigEnvironment config)
-            throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException,
-            InvocationTargetException, InstantiationException {
+    public static MappingEnvironment buildMappingEnvironment(ConfigEnvironment config) throws Exception {
         JSONObject mappingObj = JSON.parseObject(config.getChild("mapping"));
         JSONObject obj = mappingObj.getJSONObject("list");
         Map<String, List<Mapper>> map = new HashMap<>(obj.size() / 3 * 4);

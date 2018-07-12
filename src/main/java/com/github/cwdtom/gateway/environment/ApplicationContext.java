@@ -16,20 +16,18 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * 应用上下文
+ * application context
  *
  * @author chenweidong
  * @since 1.7.2
  */
 public final class ApplicationContext {
     /**
-     * 配置
+     * context
      */
     private final Map<Class, Object> context = new ConcurrentHashMap<>();
 
     public ApplicationContext(String filePath) throws Exception {
-        // 关闭内存泄漏检测
-        ResourceLeakDetector.setLevel(ResourceLeakDetector.Level.DISABLED);
         ConfigEnvironment config;
         try {
             String json = new String(Files.readAllBytes(Paths.get(filePath)));
@@ -39,10 +37,12 @@ public final class ApplicationContext {
             throw new FileNotFoundException("config file is not found.");
         }
         if (!config.isDevelop()) {
-            // 如果不是开发者模式，提高日志等级
+            // raise log level to 'warn' when it is not develop environment.
             LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
             Logger logger = loggerContext.getLogger("root");
             logger.setLevel(Level.toLevel("WARN"));
+            // shutdown resource leak detector,improve performance
+            ResourceLeakDetector.setLevel(ResourceLeakDetector.Level.DISABLED);
         }
         context.put(CorsEnvironment.class, new CorsEnvironment(config));
         context.put(FlowLimitsEnvironment.class, new FlowLimitsEnvironment(config));
@@ -50,41 +50,41 @@ public final class ApplicationContext {
         context.put(HttpsEnvironment.class, new HttpsEnvironment(config));
         MappingEnvironment mappingEnv = ContextUtils.buildMappingEnvironment(config);
         context.put(MappingEnvironment.class, mappingEnv);
-        StaticEnvironment staticEnv = new StaticEnvironment(config);
-        context.put(StaticEnvironment.class, staticEnv);
+        LocalFileEnvironment staticEnv = new LocalFileEnvironment(config);
+        context.put(LocalFileEnvironment.class, staticEnv);
         context.put(ThreadPoolGroup.class, new ThreadPoolGroup(config, mappingEnv, staticEnv));
         context.put(FilterEnvironment.class, new FilterEnvironment(config));
         ConsulEnvironment consul = new ConsulEnvironment(config);
         context.put(ConsulEnvironment.class, consul);
         if (consul.isEnable()) {
-            // 重建mapping
+            // rebuild mapping
             context.put(MappingEnvironment.class, consul.buildMapping());
         }
         ZookeeperEnvironment zk = new ZookeeperEnvironment(config);
         context.put(ZookeeperEnvironment.class, zk);
         if (zk.isEnable()) {
-            // 重建mapping
+            // rebuild mapping
             context.put(MappingEnvironment.class, zk.buildMapping());
         }
     }
 
     /**
-     * 获取上下文
+     * get context
      *
-     * @param clazz 配置类
-     * @param <T>   类泛型
-     * @return 配置对象
+     * @param clazz context class
+     * @param <T>   context type
+     * @return context
      */
     public <T> T getContext(Class<T> clazz) {
         return clazz.cast(context.get(clazz));
     }
 
     /**
-     * 设置上下文
+     * set context
      *
-     * @param clazz 配置类
-     * @param t     实体对象
-     * @param <T>   类泛型
+     * @param clazz context class
+     * @param t     context type
+     * @param <T>   context
      */
     public <T> void setContext(Class<T> clazz, T t) {
         context.put(clazz, t);

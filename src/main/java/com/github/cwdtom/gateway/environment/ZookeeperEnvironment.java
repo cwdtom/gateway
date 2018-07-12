@@ -11,14 +11,13 @@ import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.RetryNTimes;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
 /**
- * zk配置
+ * zookeeper environment
  *
  * @author chenweidong
  * @since 3.1.0
@@ -26,19 +25,19 @@ import java.util.Vector;
 @Slf4j
 public class ZookeeperEnvironment {
     /**
-     * 是否启用
+     * enable
      */
     private boolean enable;
     /**
-     * zk客户端
+     * zk client
      */
     private CuratorFramework client;
     /**
-     * server映射host
+     * server mapping host map
      */
     private Map<String, List<String>> map = new HashMap<>();
     /**
-     * 算法class
+     * algorithms class
      */
     private Class<? extends UrlMapping> clazz;
 
@@ -68,13 +67,10 @@ public class ZookeeperEnvironment {
     }
 
     /**
-     * 构造负载均衡
+     * build load balance
      *
-     * @return 映射接口
-     * @throws NoSuchMethodException     方法不存在
-     * @throws IllegalAccessException    不允许访问
-     * @throws InvocationTargetException 调用方法异常
-     * @throws InstantiationException    初始化异常
+     * @return mapping environment
+     * @throws Exception build error
      */
     public MappingEnvironment buildMapping() throws Exception {
         log.info("zookeeper service discovery, rebuild load balance.");

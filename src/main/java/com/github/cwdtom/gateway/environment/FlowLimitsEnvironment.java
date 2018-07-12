@@ -5,22 +5,22 @@ import com.alibaba.fastjson.JSONObject;
 import com.github.cwdtom.gateway.limit.TokenBucket;
 
 /**
- * 限流环境
+ * flow limits
  *
  * @author chenweidong
  * @since 1.3.0
  */
 public class FlowLimitsEnvironment {
     /**
-     * 是否启用
+     * enable
      */
     private boolean enable;
     /**
-     * 令牌产生速率ms
+     * token provide rate
      */
     private long rate;
     /**
-     * 令牌桶
+     * token bucket
      */
     private TokenBucket tokenBucket;
 

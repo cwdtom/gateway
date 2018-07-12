@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.Random;
 
 /**
- * 随机负载均衡算法
+ * random load balance
  *
  * @author chenweidong
  * @since 2.1.0
@@ -16,7 +16,7 @@ import java.util.Random;
 @Slf4j
 public class RandomLoadBalance extends UrlMapping {
     /**
-     * 随机数对象
+     * random seed
      */
     private Random random = new Random();
 
@@ -37,7 +37,7 @@ public class RandomLoadBalance extends UrlMapping {
                 sum += m.getWeight();
             }
         }
-        // 无可用代理对象
+        // not found
         if (sum == 0) {
             return null;
         }

@@ -111,7 +111,7 @@
      }
     }
     ```
-    1. mode: 运行模式，不为dev或缺省时，日志只输出warn及以上
+    1. mode: 运行模式，不为dev或缺省时，日志只输出warn及以上并且关闭内存泄漏检测
     1. http: http相关配置
         1. port: 端口号
         1. redirectHttps: 是否重定向至https

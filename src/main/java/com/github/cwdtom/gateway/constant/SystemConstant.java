@@ -1,22 +1,22 @@
 package com.github.cwdtom.gateway.constant;
 
 /**
- * 常量
+ * system constant
  *
  * @author chenweidong
- * @since 1.0.0
+ * @since 3.1.1
  */
-public class Constant {
+public class SystemConstant {
     /**
-     * linux标志
+     * linux tag
      */
     public static final String LINUX = "Linux";
     /**
-     * 系统类型
+     * system type
      */
     public static final String OS_NAME = "os.name";
     /**
-     * 开发者模式
+     * develop mode
      */
     public static final String DEVELOP = "dev";
 }

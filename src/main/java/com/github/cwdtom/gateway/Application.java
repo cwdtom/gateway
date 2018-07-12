@@ -5,7 +5,7 @@ import com.github.cwdtom.gateway.environment.ApplicationContext;
 import com.github.cwdtom.gateway.limit.TokenProvider;
 import com.github.cwdtom.gateway.listener.HttpListener;
 import com.github.cwdtom.gateway.listener.HttpsListener;
-import com.github.cwdtom.gateway.mapping.SurvivalCheck;
+import com.github.cwdtom.gateway.mapping.SurvivalChecker;
 import com.github.cwdtom.gateway.thread.DefaultRejectedExecutionHandler;
 import com.github.cwdtom.gateway.thread.DefaultThreadFactory;
 import com.github.cwdtom.gateway.thread.ThreadPoolGroup;
@@ -19,17 +19,17 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 /**
- * 启动类
+ * starter
  *
  * @author chenweidong
  * @since 1.0.0
  */
 public class Application {
     /**
-     * 启动方法
+     * main
      *
-     * @param args 参数
-     * @throws Exception 应用运行异常
+     * @param args args
+     * @throws Exception application exception
      */
     public static void main(String[] args) throws Exception {
         Options options = new Options();
@@ -49,33 +49,33 @@ public class Application {
 
         ApplicationContext ac;
         if (cmd.hasOption(ConsoleConstant.COMMAND_CONFIG)) {
-            // 初始化上下文
+            // initialize application context
             ac = new ApplicationContext(cmd.getOptionValue(ConsoleConstant.COMMAND_CONFIG));
         } else {
             throw new FileNotFoundException("config file path arg is not found.");
         }
 
-        // 初始化服务线程池
+        // initialize service thread pool
         ThreadPoolExecutor serviceThreadPool = new ThreadPoolExecutor(10, 10,
                 2000, TimeUnit.MILLISECONDS,
                 new ArrayBlockingQueue<>(10), new DefaultThreadFactory("service"),
                 new DefaultRejectedExecutionHandler());
-        // 加载mime资源
+        // load mime resource
         MimeUtil.registerMimeDetector("eu.medsea.mimeutil.detector.MagicMimeMimeDetector");
         ThreadPoolGroup tpe = ac.getContext(ThreadPoolGroup.class);
-        // 启动令牌生产
+        // run token provider
         serviceThreadPool.execute(new TokenProvider(ac));
-        // 开启生存检查
-        serviceThreadPool.execute(new SurvivalCheck(ac));
-        // 启动http监听
+        // run survival checker
+        serviceThreadPool.execute(new SurvivalChecker(ac));
+        // run http listener
         HttpListener http = new HttpListener(ac);
         serviceThreadPool.execute(http);
-        // 启动https监听
+        // run https listener
         HttpsListener https = new HttpsListener(ac);
         serviceThreadPool.execute(https);
         System.out.println("gateway is running.");
 
-        // 添加销毁事件
+        // add shutdown hook event
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             http.shutdown();
             System.out.println("http listener was shutdown!");

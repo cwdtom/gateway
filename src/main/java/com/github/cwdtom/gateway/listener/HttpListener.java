@@ -1,6 +1,6 @@
 package com.github.cwdtom.gateway.listener;
 
-import com.github.cwdtom.gateway.constant.Constant;
+import com.github.cwdtom.gateway.constant.SystemConstant;
 import com.github.cwdtom.gateway.constant.HttpConstant;
 import com.github.cwdtom.gateway.environment.ApplicationContext;
 import com.github.cwdtom.gateway.environment.HttpEnvironment;
@@ -20,7 +20,7 @@ import io.netty.handler.timeout.IdleStateHandler;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * Http监听
+ * Http listener
  *
  * @author chenweidong
  * @since 1.0.0
@@ -28,25 +28,25 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class HttpListener implements Runnable {
     /**
-     * 应用上下文
+     * application context
      */
     private final ApplicationContext applicationContext;
     /**
-     * boss线程池
+     * boss thread pool
      */
     private final EventLoopGroup boss;
     /**
-     * worker线程池
+     * worker thread pool
      */
     private final EventLoopGroup worker;
     /**
-     * 信道类
+     * channel mode
      */
     private final Class<? extends ServerChannel> channelClass;
 
     public HttpListener(ApplicationContext applicationContext) {
         this.applicationContext = applicationContext;
-        if (Constant.LINUX.equals(System.getProperty(Constant.OS_NAME))) {
+        if (SystemConstant.LINUX.equals(System.getProperty(SystemConstant.OS_NAME))) {
             boss = new EpollEventLoopGroup();
             worker = new EpollEventLoopGroup();
             channelClass = EpollServerSocketChannel.class;
@@ -60,17 +60,15 @@ public class HttpListener implements Runnable {
     }
 
     /**
-     * 关闭
+     * shutdown
      */
     public void shutdown() {
         boss.shutdownGracefully();
         worker.shutdownGracefully();
     }
 
-    /**
-     * 开始监听 阻塞
-     */
-    private void listen() {
+    @Override
+    public void run() {
         HttpEnvironment env = applicationContext.getContext(HttpEnvironment.class);
         ServerBootstrap bootstrap = new ServerBootstrap();
         bootstrap.group(boss, worker);
@@ -100,10 +98,5 @@ public class HttpListener implements Runnable {
         } finally {
             shutdown();
         }
-    }
-
-    @Override
-    public void run() {
-        listen();
     }
 }

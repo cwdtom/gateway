@@ -22,11 +22,11 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class HttpHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
     /**
-     * 是否是https请求
+     * https or http
      */
     private boolean isHttps;
     /**
-     * 应用上下文
+     * application context
      */
     private final ApplicationContext applicationContext;
 
@@ -59,7 +59,7 @@ public class HttpHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
 
     @Override
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) {
-        // 超时关闭
+        // connection timeout,close channel
         ctx.close();
     }
 }

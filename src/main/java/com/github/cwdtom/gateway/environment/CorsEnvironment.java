@@ -8,22 +8,22 @@ import java.util.Set;
 import java.util.TreeSet;
 
 /**
- * cors环境配置
+ * cors config
  *
  * @author chenweidong
  * @since 1.2.0
  */
 public class CorsEnvironment {
     /**
-     * 是否启用
+     * enable
      */
     private boolean enable;
     /**
-     * 白名单
+     * white list
      */
     private Set<String> whiteList;
     /**
-     * 允许的请求类型
+     * allow methods
      */
     private String allowMethods;
 
@@ -44,10 +44,10 @@ public class CorsEnvironment {
     }
 
     /**
-     * origin是否命中白名单
+     * check for origin legal
      *
-     * @param origin origin
-     * @return 是否命中
+     * @param origin origin host
+     * @return legal or not
      */
     public boolean isLegal(String origin) {
         return enable && (whiteList.size() <= 0 || whiteList.contains(origin));

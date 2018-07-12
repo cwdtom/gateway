@@ -3,16 +3,16 @@ package com.github.cwdtom.gateway.filter;
 import io.netty.handler.codec.http.FullHttpResponse;
 
 /**
- * 后置过滤器
+ * post filter
  *
  * @author chenweidong
  * @since 2.2.0
  */
 public interface AfterFilter {
     /**
-     * 过滤器
+     * filter
      *
-     * @param response 响应
+     * @param response response
      */
     void filter(FullHttpResponse response);
 }

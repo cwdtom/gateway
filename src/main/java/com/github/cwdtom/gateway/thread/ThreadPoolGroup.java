@@ -4,7 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.github.cwdtom.gateway.environment.ConfigEnvironment;
 import com.github.cwdtom.gateway.environment.MappingEnvironment;
-import com.github.cwdtom.gateway.environment.StaticEnvironment;
+import com.github.cwdtom.gateway.environment.LocalFileEnvironment;
 import com.github.cwdtom.gateway.handler.RequestHandler;
 import com.github.cwdtom.gateway.mapping.Mapper;
 import lombok.extern.slf4j.Slf4j;
@@ -15,7 +15,7 @@ import java.util.Map;
 import java.util.concurrent.*;
 
 /**
- * 线程池
+ * thread pool group management
  *
  * @author chenweidong
  * @since 1.0.0
@@ -23,15 +23,15 @@ import java.util.concurrent.*;
 @Slf4j
 public class ThreadPoolGroup {
     /**
-     * 线程池组
+     * thread pool group
      */
     private Map<String, ThreadPoolExecutor> threadPoolMap;
 
     /**
-     * 执行线程组任务
+     * execute mission in mapping thread pool
      *
      * @param host host
-     * @param r    任务
+     * @param r    mission
      */
     public void execute(String host, RequestHandler r) {
         ThreadPoolExecutor executor = threadPoolMap.get(host);
@@ -44,7 +44,7 @@ public class ThreadPoolGroup {
     }
 
     /**
-     * 销毁线程池
+     * shutdown thread pool
      */
     public void shutdown() {
         for (ThreadPoolExecutor t : threadPoolMap.values()) {
@@ -52,7 +52,7 @@ public class ThreadPoolGroup {
         }
     }
 
-    public ThreadPoolGroup(ConfigEnvironment config, MappingEnvironment mappingEnv, StaticEnvironment staticEnv) {
+    public ThreadPoolGroup(ConfigEnvironment config, MappingEnvironment mappingEnv, LocalFileEnvironment staticEnv) {
         JSONObject obj = JSON.parseObject(config.getChild("threadPool"));
         int core = obj.getInteger("core");
         int max = obj.getInteger("max");
@@ -67,9 +67,9 @@ public class ThreadPoolGroup {
         }
         for (String key : pathMap.keySet()) {
             if (!threadPoolMap.containsKey(key)) {
-            threadPoolMap.put(key, new ThreadPoolExecutor(core, max, timeout, TimeUnit.MILLISECONDS,
-                    new ArrayBlockingQueue<>(core >> 1), new DefaultThreadFactory(key),
-                    new DefaultRejectedExecutionHandler()));
+                threadPoolMap.put(key, new ThreadPoolExecutor(core, max, timeout, TimeUnit.MILLISECONDS,
+                        new ArrayBlockingQueue<>(core >> 1), new DefaultThreadFactory(key),
+                        new DefaultRejectedExecutionHandler()));
             }
         }
     }

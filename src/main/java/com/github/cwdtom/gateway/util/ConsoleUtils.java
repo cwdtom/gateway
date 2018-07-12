@@ -8,17 +8,17 @@ import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
 /**
- * 命令行工具
+ * console utils
  *
  * @author chenweidong
  * @since 2.2.1
  */
 public class ConsoleUtils {
     /**
-     * 获取版本号
+     * get version
      *
-     * @return 版本号
-     * @throws IOException 读取文件错误
+     * @return version
+     * @throws IOException read manifest error
      */
     public static String getVersion() throws IOException {
         JarFile jarFile = new JarFile(Application.class.getProtectionDomain().getCodeSource().getLocation().getPath());

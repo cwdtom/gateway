@@ -7,7 +7,7 @@ import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadPoolExecutor;
 
 /**
- * 默认线程池拒绝操作
+ * default thread pool reject handler
  *
  * @author chenweidong
  * @since 1.7.2

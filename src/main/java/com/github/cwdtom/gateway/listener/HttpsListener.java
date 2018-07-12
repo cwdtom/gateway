@@ -1,6 +1,6 @@
 package com.github.cwdtom.gateway.listener;
 
-import com.github.cwdtom.gateway.constant.Constant;
+import com.github.cwdtom.gateway.constant.SystemConstant;
 import com.github.cwdtom.gateway.constant.HttpConstant;
 import com.github.cwdtom.gateway.environment.ApplicationContext;
 import com.github.cwdtom.gateway.environment.HttpsEnvironment;
@@ -27,7 +27,7 @@ import java.io.FileInputStream;
 import java.security.KeyStore;
 
 /**
- * Https监听
+ * Https listener
  *
  * @author chenweidong
  * @since 1.0.0
@@ -35,25 +35,25 @@ import java.security.KeyStore;
 @Slf4j
 public class HttpsListener implements Runnable {
     /**
-     * 应用上下文
+     * application context
      */
     private final ApplicationContext applicationContext;
     /**
-     * boss线程池
+     * boss thread pool
      */
     private final EventLoopGroup boss;
     /**
-     * worker线程池
+     * worker thread pool
      */
     private final EventLoopGroup worker;
     /**
-     * 信道类
+     * channel mode
      */
     private final Class<? extends ServerChannel> channelClass;
 
     public HttpsListener(ApplicationContext applicationContext) {
         this.applicationContext = applicationContext;
-        if (Constant.LINUX.equals(System.getProperty(Constant.OS_NAME))) {
+        if (SystemConstant.LINUX.equals(System.getProperty(SystemConstant.OS_NAME))) {
             boss = new EpollEventLoopGroup();
             worker = new EpollEventLoopGroup();
             channelClass = EpollServerSocketChannel.class;
@@ -67,7 +67,7 @@ public class HttpsListener implements Runnable {
     }
 
     /**
-     * 关闭
+     * shutdown
      */
     public void shutdown() {
         boss.shutdownGracefully();
@@ -75,9 +75,28 @@ public class HttpsListener implements Runnable {
     }
 
     /**
-     * 开始监听 阻塞
+     * get ssl context
+     *
+     * @param keyPath certificate file path
+     * @param pwd     certificate password
+     * @return ssl context
+     * @throws Exception read certificate file error
      */
-    private void listen() {
+    private SSLContext sslContext(String pwd, String keyPath) throws Exception {
+        char[] passArray = pwd.toCharArray();
+        SSLContext sslContext = SSLContext.getInstance("TLSv1");
+        KeyStore ks = KeyStore.getInstance("JKS");
+        FileInputStream inputStream = new FileInputStream(keyPath);
+        ks.load(inputStream, passArray);
+        KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+        kmf.init(ks, passArray);
+        sslContext.init(kmf.getKeyManagers(), null, null);
+        inputStream.close();
+        return sslContext;
+    }
+
+    @Override
+    public void run() {
         HttpsEnvironment env = applicationContext.getContext(HttpsEnvironment.class);
         if (!env.isEnable()) {
             return;
@@ -113,31 +132,5 @@ public class HttpsListener implements Runnable {
         } finally {
             shutdown();
         }
-    }
-
-    /**
-     * 获取ssl context
-     *
-     * @param keyPath 证书路径
-     * @param pwd     证书密码
-     * @return ssl context
-     * @throws Exception 获取异常
-     */
-    private SSLContext sslContext(String pwd, String keyPath) throws Exception {
-        char[] passArray = pwd.toCharArray();
-        SSLContext sslContext = SSLContext.getInstance("TLSv1");
-        KeyStore ks = KeyStore.getInstance("JKS");
-        FileInputStream inputStream = new FileInputStream(keyPath);
-        ks.load(inputStream, passArray);
-        KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
-        kmf.init(ks, passArray);
-        sslContext.init(kmf.getKeyManagers(), null, null);
-        inputStream.close();
-        return sslContext;
-    }
-
-    @Override
-    public void run() {
-        listen();
     }
 }

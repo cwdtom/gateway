@@ -12,18 +12,18 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * 过滤器环境
+ * filter environment
  *
  * @author chenweidong
  * @since 2.2.0
  */
 public class FilterEnvironment {
     /**
-     * 前置过滤列表
+     * pre filter list
      */
     private List<BeforeFilter> beforeFilters = new LinkedList<>();
     /**
-     * 后置过滤列表
+     * post filter list
      */
     private List<AfterFilter> afterFilters = new LinkedList<>();
 
@@ -51,11 +51,11 @@ public class FilterEnvironment {
     }
 
     /**
-     * 前置过滤
+     * pre filters
      *
-     * @param request 请求体
-     * @param content 请求内容
-     * @return 是否拦截
+     * @param request request
+     * @param content request context
+     * @return continue or not
      */
     public boolean beforeFilter(FullHttpRequest request, byte[] content) {
         for (BeforeFilter filter : beforeFilters) {
@@ -68,9 +68,9 @@ public class FilterEnvironment {
     }
 
     /**
-     * 后置过滤器
+     * post filters
      *
-     * @param response 响应
+     * @param response response
      */
     public void afterFilter(FullHttpResponse response) {
         for (AfterFilter filter : afterFilters) {

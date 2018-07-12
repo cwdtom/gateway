@@ -6,25 +6,25 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 映射配置
+ * mapping environment
  *
  * @author chenweidong
  * @since 2.1.0
  */
 public interface MappingEnvironment {
     /**
-     * 获取映射表
+     * get mapping map
      *
-     * @return 映射表
+     * @return mapping map
      */
     Map<String, List<Mapper>> get();
 
     /**
-     * 获取负载均衡映射对象
+     * get proxy mapper by load balance
      *
      * @param host host
      * @param ip   ip
-     * @return 映射对象
+     * @return mapper
      */
     Mapper getLoadBalance(String host, String ip);
 }

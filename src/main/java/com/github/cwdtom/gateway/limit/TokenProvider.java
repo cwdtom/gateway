@@ -5,7 +5,7 @@ import com.github.cwdtom.gateway.environment.FlowLimitsEnvironment;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * 令牌生产者
+ * token provider
  *
  * @author chenweidong
  * @since 1.3.0
@@ -13,7 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class TokenProvider implements Runnable {
     /**
-     * 应用上下文
+     * application context
      */
     private final ApplicationContext applicationContext;
 
@@ -33,7 +33,7 @@ public class TokenProvider implements Runnable {
                 }
             } catch (InterruptedException e) {
                 log.error("token production exception.", e);
-                // 重启
+                // restart
                 run();
             }
         }

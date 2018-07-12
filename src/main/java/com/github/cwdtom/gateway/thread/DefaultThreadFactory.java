@@ -4,7 +4,7 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * 默认线程工厂
+ * default thread factory
  *
  * @author chenweidong
  * @since 1.7.2
@@ -15,7 +15,7 @@ public class DefaultThreadFactory implements ThreadFactory {
      */
     private String host;
     /**
-     * 原子数
+     * atom integer
      */
     private AtomicInteger count = new AtomicInteger(0);
 

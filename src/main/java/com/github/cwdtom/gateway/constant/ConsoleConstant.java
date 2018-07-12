@@ -1,22 +1,22 @@
 package com.github.cwdtom.gateway.constant;
 
 /**
- * 命令行常量
+ * console constant
  *
  * @author chenweidong
  * @since 3.0.2
  */
 public class ConsoleConstant {
     /**
-     * 命令行参数help
+     * console arg help key
      */
     public static final String COMMAND_HELP = "h";
     /**
-     * 命令行参数配置文件地址
+     * console arg config file path key
      */
     public static final String COMMAND_CONFIG = "c";
     /**
-     * 命令行参数版本号
+     * console arg version key
      */
     public static final String COMMAND_VERSION = "v";
 }
