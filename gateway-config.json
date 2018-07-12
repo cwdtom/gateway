@@ -20,11 +20,11 @@
     "list": {
       "127.0.0.1:8080": [
         {
-          "url": "123.125.115.110:80",
+          "url": "198.41.215.88:80",
           "weight": 200
         },
         {
-          "url": "220.181.57.216:80",
+          "url": "104.16.24.88:80",
           "weight": 100
         }
       ]
@@ -35,6 +35,7 @@
   },
   "cors": {
     "enable": true,
+    "allowMethods": "GET, POST, HEAD, PUT, PATCH, DELETE",
     "whiteList": []
   },
   "flowLimits": {

@@ -1,6 +1,6 @@
 # Gateway
 
-![Version](https://img.shields.io/badge/version-3.1.0-green.svg)
+![Version](https://img.shields.io/badge/version-3.1.1-green.svg)
 [![Build Status](https://travis-ci.org/cwdtom/gateway.svg?branch=master)](https://travis-ci.org/cwdtom/gateway)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](http://opensource.org/licenses/MIT)
 
@@ -74,6 +74,7 @@
       },
       "cors": {
         "enable": true,
+        "allowMethods": "GET, POST, HEAD, PUT, PATCH, DELETE",
         "whiteList": []
       },
       "flowLimits": {
@@ -135,6 +136,7 @@
         1. value: 本地映射文件夹
     1. cors: 跨域相关配置
         1. enable: 是否开启跨域
+        1. allowMethods: 允许的跨域请求类型
         1. whiteList: 跨域白名单，列表为空且开启跨域情况下为允许全部origin跨域请求
     1. flowLimits: 限流配置
         1. enable: 是否开启限流

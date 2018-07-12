@@ -96,12 +96,12 @@ public class ResponseUtils {
     /**
      * 构造预校验响应体
      *
+     * @param origin 跨域请求域名
      * @return 响应
      */
-    public static FullHttpResponse buildOptionsResponse() {
+    public static FullHttpResponse buildOptionsResponse(String origin) {
         FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
-        response.headers().set(HttpHeaderNames.ACCESS_CONTROL_ALLOW_ORIGIN.toString(), "*")
-                .set(HttpHeaderNames.ACCESS_CONTROL_ALLOW_METHODS.toString(), "GET, POST")
+        response.headers().set(HttpHeaderNames.ACCESS_CONTROL_ALLOW_ORIGIN.toString(), origin == null ? "*" : origin)
                 .set(HttpHeaderNames.ACCESS_CONTROL_ALLOW_HEADERS.toString(), HttpHeaderNames.CONTENT_TYPE)
                 .set(HttpHeaderNames.CONTENT_LENGTH.toString(), response.content().readableBytes());
         return response;

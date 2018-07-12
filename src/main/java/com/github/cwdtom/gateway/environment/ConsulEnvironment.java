@@ -49,14 +49,16 @@ public class ConsulEnvironment {
             enable = false;
         } else {
             enable = obj.getBoolean("enable");
-            client = new ConsulClient(obj.getString("host"));
-            JSONObject mapping = obj.getJSONObject("mapping");
-            for (Map.Entry<String, Object> entry : mapping.entrySet()) {
-                JSONArray arr = (JSONArray) entry.getValue();
-                map.put(entry.getKey(), arr.toJavaList(String.class));
+            if (enable) {
+                client = new ConsulClient(obj.getString("host"));
+                JSONObject mapping = obj.getJSONObject("mapping");
+                for (Map.Entry<String, Object> entry : mapping.entrySet()) {
+                    JSONArray arr = (JSONArray) entry.getValue();
+                    map.put(entry.getKey(), arr.toJavaList(String.class));
+                }
+                JSONObject mappingObj = JSON.parseObject(config.getChild("mapping"));
+                clazz = Class.forName(mappingObj.getString("mode")).asSubclass(UrlMapping.class);
             }
-            JSONObject mappingObj = JSON.parseObject(config.getChild("mapping"));
-            clazz = Class.forName(mappingObj.getString("mode")).asSubclass(UrlMapping.class);
         }
     }
 

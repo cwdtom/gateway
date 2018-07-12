@@ -48,17 +48,18 @@ public class ZookeeperEnvironment {
             enable = false;
         } else {
             enable = obj.getBoolean("enable");
-            // 监控所有被触发的事件
-            client = CuratorFrameworkFactory.newClient(obj.getString("host"),
-                    new RetryNTimes(10, 5000));
-            client.start();
-            JSONObject mapping = obj.getJSONObject("mapping");
-            for (Map.Entry<String, Object> entry : mapping.entrySet()) {
-                JSONArray arr = (JSONArray) entry.getValue();
-                map.put(entry.getKey(), arr.toJavaList(String.class));
+            if (enable) {
+                client = CuratorFrameworkFactory.newClient(obj.getString("host"),
+                        new RetryNTimes(10, 5000));
+                client.start();
+                JSONObject mapping = obj.getJSONObject("mapping");
+                for (Map.Entry<String, Object> entry : mapping.entrySet()) {
+                    JSONArray arr = (JSONArray) entry.getValue();
+                    map.put(entry.getKey(), arr.toJavaList(String.class));
+                }
+                JSONObject mappingObj = JSON.parseObject(config.getChild("mapping"));
+                clazz = Class.forName(mappingObj.getString("mode")).asSubclass(UrlMapping.class);
             }
-            JSONObject mappingObj = JSON.parseObject(config.getChild("mapping"));
-            clazz = Class.forName(mappingObj.getString("mode")).asSubclass(UrlMapping.class);
         }
     }
 

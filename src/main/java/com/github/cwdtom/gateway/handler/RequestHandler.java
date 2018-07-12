@@ -1,6 +1,5 @@
 package com.github.cwdtom.gateway.handler;
 
-import com.github.cwdtom.gateway.constant.Constant;
 import com.github.cwdtom.gateway.constant.HttpConstant;
 import com.github.cwdtom.gateway.environment.*;
 import com.github.cwdtom.gateway.mapping.Mapper;
@@ -159,26 +158,40 @@ public class RequestHandler implements Runnable {
         }
 
         String url = HttpConstant.HTTP_PREFIX + mapping + request.uri();
-        if (request.method().equals(HttpMethod.GET) && mapping != null) {
-            // 处理get请求
-            log.info("GET {}", url);
-            response = HttpUtils.sendGet(url);
-        } else if (request.method().equals(HttpMethod.POST) && mapping != null) {
-            // 处理post请求
-            log.info("POST {}", url);
-            response = HttpUtils.sendPost(url, content, request.headers().get(HttpHeaderNames.CONTENT_TYPE));
-        } else if (request.method().equals(HttpMethod.OPTIONS)) {
-            // 处理options请求 支持cors
-            String origin = request.headers().get(HttpHeaderNames.ORIGIN);
-            if (applicationContext.getContext(CorsEnvironment.class).isLegal(origin)) {
-                response = ResponseUtils.buildOptionsResponse();
+        log.info(request.method().toString() + " {}", url);
+        if (mapping != null) {
+            if (request.method().equals(HttpMethod.GET)) {
+                // GET
+                response = HttpUtils.sendGet(url, request.headers());
+            } else if (request.method().equals(HttpMethod.POST)) {
+                // POST
+                response = HttpUtils.sendPost(url, content, request.headers());
+            } else if (request.method().equals(HttpMethod.OPTIONS)) {
+                // OPTIONS support cors
+                String origin = request.headers().get(HttpHeaderNames.ORIGIN);
+                if (applicationContext.getContext(CorsEnvironment.class).isLegal(origin)) {
+                    response = ResponseUtils.buildOptionsResponse(origin);
+                    response.headers().set(HttpHeaderNames.ACCESS_CONTROL_ALLOW_METHODS.toString(),
+                            applicationContext.getContext(CorsEnvironment.class).getAllowMethods());
+                } else {
+                    response = ResponseUtils.buildFailResponse(HttpResponseStatus.NOT_ACCEPTABLE);
+                }
+            } else if (request.method().equals(HttpMethod.HEAD)) {
+                // HEAD
+                response = HttpUtils.sendHead(url, request.headers());
+            } else if (request.method().equals(HttpMethod.PUT)) {
+                // PUT
+                response = HttpUtils.sendPut(url, content, request.headers());
+            } else if (request.method().equals(HttpMethod.PATCH)) {
+                // PATCH
+                response = HttpUtils.sendPatch(url, content, request.headers());
+            } else if (request.method().equals(HttpMethod.DELETE)) {
+                // DELETE
+                response = HttpUtils.sendDelete(url, content, request.headers());
             } else {
-                response = ResponseUtils.buildFailResponse(HttpResponseStatus.NOT_ACCEPTABLE);
+                // 不支持其他请求
+                response = ResponseUtils.buildFailResponse(HttpResponseStatus.BAD_REQUEST);
             }
-        } else {
-            // 不支持其他请求
-            log.info("NONSUPPORT {}", url);
-            response = ResponseUtils.buildFailResponse(HttpResponseStatus.BAD_REQUEST);
         }
         // 是否keep-alive
         if (HttpUtil.isKeepAlive(request)) {

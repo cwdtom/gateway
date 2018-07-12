@@ -22,6 +22,10 @@ public class CorsEnvironment {
      * 白名单
      */
     private Set<String> whiteList;
+    /**
+     * 允许的请求类型
+     */
+    private String allowMethods;
 
     CorsEnvironment(ConfigEnvironment config) {
         JSONObject obj = JSON.parseObject(config.getChild("cors"));
@@ -29,6 +33,7 @@ public class CorsEnvironment {
             enable = false;
         } else {
             enable = obj.getBoolean("enable");
+            allowMethods = obj.getString("allowMethods");
             JSONArray array = obj.getJSONArray("whiteList");
             Set<String> whiteList = new TreeSet<>();
             for (int i = 0; i < array.size(); i++) {
@@ -46,5 +51,9 @@ public class CorsEnvironment {
      */
     public boolean isLegal(String origin) {
         return enable && (whiteList.size() <= 0 || whiteList.contains(origin));
+    }
+
+    public String getAllowMethods() {
+        return allowMethods;
     }
 }
