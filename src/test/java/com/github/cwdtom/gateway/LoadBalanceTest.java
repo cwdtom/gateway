@@ -13,17 +13,17 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 负载均衡测试
+ * load balance test
  *
  * @author chenweidong
  */
 public class LoadBalanceTest {
     /**
-     * 一致性hash算法
+     * consistent hash
      */
     private ConsistentHash consistentHash;
     /**
-     * 随机权重算法
+     * random load balance
      */
     private RandomLoadBalance randomLoadBalance;
 
@@ -31,8 +31,8 @@ public class LoadBalanceTest {
     public void setup() {
         Map<String, List<Mapper>> urlMapping = new HashMap<>();
         urlMapping.put("127.0.0.1:8080", Arrays.asList(
-                new Mapper("127.0.0.1:8080","123.125.115.110:80", 200),
-                new Mapper("127.0.0.1:8080","220.181.57.216:80", 100)));
+                new Mapper("127.0.0.1:8080", "123.125.115.110:80", 200),
+                new Mapper("127.0.0.1:8080", "220.181.57.216:80", 100)));
         consistentHash = new ConsistentHash(urlMapping);
         randomLoadBalance = new RandomLoadBalance(urlMapping);
 
