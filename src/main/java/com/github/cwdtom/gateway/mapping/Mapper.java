@@ -4,6 +4,8 @@ import com.github.cwdtom.gateway.constant.LoadBalanceConstant;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 /**
  * proxy mapper
  *
@@ -24,7 +26,7 @@ public class Mapper {
     /**
      * exception count
      */
-    private int exceptionCount;
+    private AtomicInteger exceptionCount;
     /**
      * target url
      */
@@ -35,7 +37,7 @@ public class Mapper {
         this.target = target;
         // weight default 100
         this.weight = weight == null || weight < 0 ? 100 : weight;
-        this.exceptionCount = 0;
+        this.exceptionCount = new AtomicInteger(0);
     }
 
     public String getTarget() {
@@ -46,8 +48,15 @@ public class Mapper {
         return weight;
     }
 
-    public void setExceptionCount(int exceptionCount) {
-        this.exceptionCount = exceptionCount;
+    public void setWeight(int weight) {
+        this.weight = weight;
+    }
+
+    /**
+     * rest exception count
+     */
+    public void restExceptionCount() {
+        exceptionCount.set(0);
     }
 
     /**
@@ -56,7 +65,7 @@ public class Mapper {
      * @return error service
      */
     public String exception() {
-        this.exceptionCount++;
+        exceptionCount.incrementAndGet();
         if (!isOnline()) {
             log.error("{} offline.", target);
             // put it to survival check list
@@ -85,6 +94,6 @@ public class Mapper {
      * @return online or offline
      */
     public boolean isOnline() {
-        return exceptionCount < LoadBalanceConstant.OFFLINE_COUNT;
+        return exceptionCount.get() < LoadBalanceConstant.OFFLINE_COUNT;
     }
 }

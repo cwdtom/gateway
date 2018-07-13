@@ -18,7 +18,7 @@ public class ConsistentHash extends UrlMapping {
     /**
      * hash circle
      */
-    private Map<String, Node> hashLoop;
+    private Map<String, Node> hashCircle;
 
     public ConsistentHash(Map<String, List<Mapper>> urlMapping) {
         super(urlMapping);
@@ -56,7 +56,7 @@ public class ConsistentHash extends UrlMapping {
             head.next.prev = next;
             next.next = head.next;
             hashLoop.put(entry.getKey(), head);
-            this.hashLoop = hashLoop;
+            this.hashCircle = hashLoop;
         }
         log.info("ConsistentHash load completed.");
     }
@@ -64,7 +64,7 @@ public class ConsistentHash extends UrlMapping {
     @Override
     public Mapper getLoadBalance(String host, String ip) {
         int hashCode = ip.hashCode();
-        Node node = hashLoop.get(host);
+        Node node = hashCircle.get(host);
         if (node == null) {
             return null;
         }

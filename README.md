@@ -1,6 +1,6 @@
 # Gateway
 
-![Version](https://img.shields.io/badge/version-3.1.1-green.svg)
+![Version](https://img.shields.io/badge/version-3.1.2-green.svg)
 [![Build Status](https://travis-ci.org/cwdtom/gateway.svg?branch=master)](https://travis-ci.org/cwdtom/gateway)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](http://opensource.org/licenses/MIT)
 
@@ -14,6 +14,8 @@
 1. Load balance
     1. RandomLoadBalance
     1. ConsistentHash
+    1. RoundRobinLoadBalance
+    1. LeastActiveLoadBalance
 1. Support fuse service which is offline,then retest service in single thread,when it is reachable,take it online.
 1. Use epoll model in Linux,other uses nio model.
 1. Static file mapping.
@@ -23,7 +25,7 @@
 
 ## Download
 
-Download [the latest release](https://github.com/cwdtom/gateway/releases/download/3.1.0/gateway-3.1.0.jar)
+Download [the latest release](https://github.com/cwdtom/gateway/releases/download/3.1.2/gateway-3.1.2.jar)
 
 ## Usage
 

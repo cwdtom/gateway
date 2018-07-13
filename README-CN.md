@@ -1,6 +1,6 @@
 # Gateway
 
-![Version](https://img.shields.io/badge/version-3.1.1-green.svg)
+![Version](https://img.shields.io/badge/version-3.1.2-green.svg)
 [![Build Status](https://travis-ci.org/cwdtom/gateway.svg?branch=master)](https://travis-ci.org/cwdtom/gateway)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](http://opensource.org/licenses/MIT)
 
@@ -14,6 +14,8 @@
 1. 负载均衡采用
     1. RandomLoadBalance 随机负载均衡算法
     1. ConsistentHash 一致性hash算法
+    1. RoundRobinLoadBalance 轮询负载均衡算法
+    1. LeastActiveLoadBalance 最少活跃数负载均衡算法
 1. 支持熔断不可用服务，并在单独线程中进行重试，成功以后重新设置为可用。
 1. 在linux下采用epoll其他系统采用nio。
 1. 静态文件映射。
@@ -23,7 +25,7 @@
 
 ## Download
 
-下载最[新版本JAR包](https://github.com/cwdtom/gateway/releases/download/3.1.0/gateway-3.1.0.jar)
+下载最[新版本JAR包](https://github.com/cwdtom/gateway/releases/download/3.1.2/gateway-3.1.2.jar)
 
 ## Usage
 

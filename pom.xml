@@ -6,7 +6,7 @@
 
     <groupId>com.github.cwdtom</groupId>
     <artifactId>gateway</artifactId>
-    <version>3.1.1</version>
+    <version>3.1.2</version>
     <packaging>jar</packaging>
     <name>gateway</name>
     <url>https://github.com/cwdtom/gateway</url>

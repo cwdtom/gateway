@@ -56,7 +56,7 @@ public class SurvivalChecker implements Runnable {
                     try {
                         HttpUtils.sendGet(HttpConstant.HTTP_PREFIX + m.getTarget());
                         // restore mapper
-                        m.setExceptionCount(0);
+                        m.restExceptionCount();
                         iterator.remove();
                     } catch (IOException ignored) {
                     }
