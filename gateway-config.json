@@ -31,7 +31,7 @@
     }
   },
   "static": {
-    "localhost:8080": "/Users/chenweidong/workspace/gateway"
+    "localhost:8080": "D:\\workspace\\gateway"
   },
   "cors": {
     "enable": true,
