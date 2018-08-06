@@ -76,12 +76,12 @@
         <appender-ref ref="ERROR-FILE" />
     </root>
 
-    <logger name="com.qurong" level="WARN" additivity="false">
+    <logger name="com.github.cwdtom" level="WARN" additivity="false">
         <appender-ref ref="ERROR-FILE" />
         <appender-ref ref="STDOUT"/>
     </logger>
 
-    <logger name="com.qurong" level="INFO" additivity="false">
+    <logger name="com.github.cwdtom" level="INFO" additivity="false">
         <appender-ref ref="INFO-FILE"/>
         <appender-ref ref="STDOUT"/>
     </logger>
